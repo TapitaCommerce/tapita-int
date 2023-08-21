@@ -23,45 +23,52 @@ import {
 import { authenticate } from "../shopify.server";
 import StoreModel from "~/models/store.model";
 import { shopInformation } from "~/constants/queryString";
+import axios from "axios";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
-  const { admin } = await authenticate.admin(request);
-  const shop = await admin.graphql(
-    shopInformation
+  let shop;
+  const config = {
+      headers: {
+          "X-Shopify-Access-Token": session.accessToken,
+          "Accept-Encoding": "application/json",
+      },
+  };
+  shop = await axios.get(
+    `https://${session.shop}/admin/api/2023-07/shop.json`,
+    config
   );
-  
-  const shopInfo = await shop.json();
-  console.log("NGUYEN HONG SON shop: ", shopInfo.data.shop);
+  console.log("NGUYEN HONG SON shop: ", shop.data.shop);
+  shop = shop.data.shop;
   await StoreModel.findOneAndUpdate(
     {
-      id: shopInfo.data.shop.id
+      id: shop.id
     }, 
     {
-      id: shopInfo.data.shop.id,
-      name: shopInfo.data.shop.name,
-      email: shopInfo.data.shop.email,
-      shop: shopInfo.data.shop.name,
-      domain: shopInfo.data.shop.primaryDomain.host,
+      id: shop.id,
+      name: shop.name,
+      email: shop.email,
+      shop: shop.name,
+      domain: shop.domain,
       scope: session.scope,
-      country: shopInfo.data.shop.billingAddress.country,
-      customer_email: shopInfo.data.shop.email,
-      myshopify_domain: shopInfo.data.shop.myshopifyDomain,
-      plan_name: shopInfo.data.shop.plan.displayName,
-      plan_display_name: shopInfo.data.shop.plan.displayName,
-      shop_owner: shopInfo.data.shop.name,
-      iana_timezone: shopInfo.data.shop.ianaTimezone,
-      currency: shopInfo.data.shop.currencyCode,
-      address1: shopInfo.data.shop.billingAddress.address1 || "NULL",
-      address2: shopInfo.data.shop.billingAddress.address2 || "NULL",
-      phone: shopInfo.data.shop.billingAddress.phone || "NULL",
-      created_at: new Date().toISOString(),
+      country: shop.country_name,
+      customer_email: shop.customer_email,
+      myshopify_domain: shop.myshopify_domain,
+      plan_name: shop.plan_name,
+      plan_display_name: shop.plan_display_name,
+      shop_owner: shop.shop_owner,
+      iana_timezone: shop.iana_timezone,
+      currency: shop.currency,
+      address1: shop.address1 || "NULL",
+      address2: shop.address2 || "NULL",
+      phone: shop.phone || "NULL",
+      created_at: shop.created_at,
       accessToken: session.accessToken,
     }, 
     {
       upsert: true,
     });
-  console.log("NGUYEN HONG SON session: ", session);
+  
   return json({ shop: session.shop.replace(".myshopify.com", "") });
 };
 

@@ -2,7 +2,7 @@
 
 name = "efficient-shipping-app"
 client_id = "65ed361e1b30cad533121d30ca794626"
-application_url = "https://sleeps-gmc-torture-margaret.trycloudflare.com"
+application_url = "https://encourage-tim-pattern-chamber.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products,read_files,write_files"
 
 [auth]
 redirect_urls = [
-  "https://sleeps-gmc-torture-margaret.trycloudflare.com/auth/callback",
-  "https://sleeps-gmc-torture-margaret.trycloudflare.com/auth/shopify/callback",
-  "https://sleeps-gmc-torture-margaret.trycloudflare.com/api/auth/callback"
+  "https://encourage-tim-pattern-chamber.trycloudflare.com/auth/callback",
+  "https://encourage-tim-pattern-chamber.trycloudflare.com/auth/shopify/callback",
+  "https://encourage-tim-pattern-chamber.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
