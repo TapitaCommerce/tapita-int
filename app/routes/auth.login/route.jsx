@@ -42,7 +42,7 @@ export default function Auth() {
   const actionData = useActionData();
   const [shop, setShop] = useState("");
   const { errors } = actionData || loaderData;
-
+  
   return (
     <PolarisAppProvider i18n={polarisTranslations}>
       <Page>

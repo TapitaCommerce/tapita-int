@@ -18,6 +18,10 @@ import {
   Divider,
   List,
   Link,
+  Form,
+  FormLayout,
+  Checkbox,
+  TextField,
 } from "@shopify/polaris";
 
 import { authenticate } from "../shopify.server";
@@ -40,7 +44,7 @@ export const loader = async ({ request }) => {
   );
   console.log("NGUYEN HONG SON shop: ", shop.data.shop);
   shop = shop.data.shop;
-  await StoreModel.findOneAndUpdate(
+  const shopData = await StoreModel.findOneAndUpdate(
     {
       id: shop.id
     }, 
@@ -69,7 +73,7 @@ export const loader = async ({ request }) => {
       upsert: true,
     });
   
-  return json({ shop: session.shop.replace(".myshopify.com", "") });
+  return json({ shop: shopData });
 };
 
 export async function action({ request }) {
@@ -138,183 +142,148 @@ export default function Index() {
   }, [productId]);
 
   const generateProduct = () => submit({}, { replace: true, method: "POST" });
-
+  
   return (
     <Page>
-      <ui-title-bar title="Remix app template">
+      <ui-title-bar title="Store information">
         <button variant="primary" onClick={generateProduct}>
           Generate a product
         </button>
       </ui-title-bar>
       <VerticalStack gap="5">
-        <Layout>
-          <Layout.Section>
-            <Card>
-              <VerticalStack gap="5">
-                <VerticalStack gap="2">
-                  <Text as="h2" variant="headingMd">
-                    Congrats on creating a new Shopify app 🎉
-                  </Text>
-                  <Text variant="bodyMd" as="p">
-                    This embedded app template uses{" "}
-                    <Link
-                      url="https://shopify.dev/docs/apps/tools/app-bridge"
-                      target="_blank"
-                    >
-                      App Bridge
-                    </Link>{" "}
-                    interface examples like an{" "}
-                    <Link url="/app/additional">
-                      additional page in the app nav
-                    </Link>
-                    , as well as an{" "}
-                    <Link
-                      url="https://shopify.dev/docs/api/admin-graphql"
-                      target="_blank"
-                    >
-                      Admin GraphQL
-                    </Link>{" "}
-                    mutation demo, to provide a starting point for app
-                    development.
-                  </Text>
-                </VerticalStack>
-                <VerticalStack gap="2">
-                  <Text as="h3" variant="headingMd">
-                    Get started with products
-                  </Text>
-                  <Text as="p" variant="bodyMd">
-                    Generate a product with GraphQL and get the JSON output for
-                    that product. Learn more about the{" "}
-                    <Link
-                      url="https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate"
-                      target="_blank"
-                    >
-                      productCreate
-                    </Link>{" "}
-                    mutation in our API references.
-                  </Text>
-                </VerticalStack>
-                <HorizontalStack gap="3" align="end">
-                  {actionData?.product && (
-                    <Button
-                      url={`https://admin.shopify.com/store/${shop}/admin/products/${productId}`}
-                      target="_blank"
-                    >
-                      View product
-                    </Button>
-                  )}
-                  <Button loading={isLoading} primary onClick={generateProduct}>
-                    Generate a product
-                  </Button>
-                </HorizontalStack>
-                {actionData?.product && (
-                  <Box
-                    padding="4"
-                    background="bg-subdued"
-                    borderColor="border"
-                    borderWidth="1"
-                    borderRadius="2"
-                    overflowX="scroll"
-                  >
-                    <pre style={{ margin: 0 }}>
-                      <code>{JSON.stringify(actionData.product, null, 2)}</code>
-                    </pre>
-                  </Box>
-                )}
-              </VerticalStack>
-            </Card>
-          </Layout.Section>
-          <Layout.Section secondary>
-            <VerticalStack gap="5">
-              <Card>
-                <VerticalStack gap="2">
-                  <Text as="h2" variant="headingMd">
-                    App template specs
-                  </Text>
-                  <VerticalStack gap="2">
-                    <Divider />
-                    <HorizontalStack align="space-between">
-                      <Text as="span" variant="bodyMd">
-                        Framework
-                      </Text>
-                      <Link url="https://remix.run" target="_blank">
-                        Remix
-                      </Link>
-                    </HorizontalStack>
-                    <Divider />
-                    <HorizontalStack align="space-between">
-                      <Text as="span" variant="bodyMd">
-                        Database
-                      </Text>
-                      <Link url="https://www.prisma.io/" target="_blank">
-                        Prisma
-                      </Link>
-                    </HorizontalStack>
-                    <Divider />
-                    <HorizontalStack align="space-between">
-                      <Text as="span" variant="bodyMd">
-                        Interface
-                      </Text>
-                      <span>
-                        <Link url="https://polaris.shopify.com" target="_blank">
-                          Polaris
-                        </Link>
-                        {", "}
-                        <Link
-                          url="https://shopify.dev/docs/apps/tools/app-bridge"
-                          target="_blank"
-                        >
-                          App Bridge
-                        </Link>
-                      </span>
-                    </HorizontalStack>
-                    <Divider />
-                    <HorizontalStack align="space-between">
-                      <Text as="span" variant="bodyMd">
-                        API
-                      </Text>
-                      <Link
-                        url="https://shopify.dev/docs/api/admin-graphql"
-                        target="_blank"
-                      >
-                        GraphQL API
-                      </Link>
-                    </HorizontalStack>
-                  </VerticalStack>
-                </VerticalStack>
-              </Card>
-              <Card>
-                <VerticalStack gap="2">
-                  <Text as="h2" variant="headingMd">
-                    Next steps
-                  </Text>
-                  <List spacing="extraTight">
-                    <List.Item>
-                      Build an{" "}
-                      <Link
-                        url="https://shopify.dev/docs/apps/getting-started/build-app-example"
-                        target="_blank"
-                      >
-                        {" "}
-                        example app
-                      </Link>{" "}
-                      to get started
-                    </List.Item>
-                    <List.Item>
-                      Explore Shopify’s API with{" "}
-                      <Link
-                        url="https://shopify.dev/docs/apps/tools/graphiql-admin-api"
-                        target="_blank"
-                      >
-                        GraphiQL
-                      </Link>
-                    </List.Item>
-                  </List>
-                </VerticalStack>
-              </Card>
-            </VerticalStack>
-          </Layout.Section>
-        </Layout>
+      <Card>
+        <Form onSubmit={() => submit({}, { replace: true, method: "GET" })}> 
+          <FormLayout>
+            <TextField
+              label="Shop id"
+              value={shop.id}
+              type="text"
+              autoComplete="text"
+            />
+
+            <TextField
+              label="Shop name"
+              value={shop.name}
+              type="text"
+              autoComplete="text"
+            />
+
+            <TextField
+              label="Shop email"
+              value={shop.email}
+              type="email"
+              autoComplete="email"
+            />
+
+            <TextField
+              label="Shop domain"
+              value={shop.domain}
+              type="text"
+              autoComplete="text"
+            />
+
+            <TextField
+              label="Shop scope"
+              value={shop.domain}
+              type="text"
+              autoComplete="text"
+            />
+
+            <TextField
+              label="Shop country"
+              value={shop.domain}
+              type="text"
+              autoComplete="text"
+            />
+
+            <TextField
+              label="Shop customer email"
+              value={shop.domain}
+              type="text"
+              autoComplete="text"
+            />
+
+            <TextField
+              label="Shop my shopify domain"
+              value={shop.myshopify_domain}
+              type="text"
+              autoComplete="text"
+            />
+
+            <TextField
+              label="Shop plan name"
+              value={shop.plan_name}
+              type="text"
+              autoComplete="text"
+            />
+
+            <TextField
+              label="Shop plan display name"
+              value={shop.plan_display_name}
+              type="text"
+              autoComplete="text"
+            />
+
+            <TextField
+              label="Shop shop owner"
+              value={shop.shop_owner}
+              type="text"
+              autoComplete="text"
+            />
+
+            <TextField
+              label="Shop iana timezone"
+              value={shop.iana_timezone}
+              type="text"
+              autoComplete="text"
+            />
+
+            <TextField
+              label="Shop currency"
+              value={shop.currency}
+              type="text"
+              autoComplete="text"
+            />
+
+            <TextField
+              label="Shop address1"
+              value={shop.address1}
+              type="text"
+              autoComplete="text"
+            />
+
+            <TextField
+              label="Shop address2"
+              value={shop.address2}
+              type="text"
+              autoComplete="text"
+            />
+
+            <TextField
+              label="Shop phone"
+              value={shop.phone}
+              type="text"
+              autoComplete="text"
+            />
+
+            <TextField
+              label="Shop created at"
+              value={shop.created_at}
+              type="text"
+              autoComplete="text"
+            />
+
+            <TextField
+              label="Shop access token"
+              value={shop.accessToken}
+              type="text"
+              autoComplete="text"
+            />
+
+            <Button submit>Submit</Button>
+          </FormLayout>
+        </Form>
+      </Card>
       </VerticalStack>
     </Page>
   );
