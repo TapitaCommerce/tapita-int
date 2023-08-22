@@ -49,8 +49,6 @@ export default shopify;
 export const apiVersion = LATEST_API_VERSION;
 export const addDocumentResponseHeaders = shopify.addDocumentResponseHeaders;
 export const authenticate = shopify.authenticate;
-console.log("NGUYEN HONG SON authenticate: ", authenticate);
 export const login = shopify.login;
-console.log("NGUYEN HONG SON login: ", login);
 export const registerWebhooks = shopify.registerWebhooks;
 export const sessionStorage = shopify.sessionStorage;

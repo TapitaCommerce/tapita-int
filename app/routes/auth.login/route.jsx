@@ -19,7 +19,6 @@ import { loginErrorMessage } from "./error.server";
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export async function loader({ request }) {
-  console.log("NGUYEN HONG SON: ", request);
   const errors = loginErrorMessage(await login(request));
 
   return json({

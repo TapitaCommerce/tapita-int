@@ -42,7 +42,6 @@ export const loader = async ({ request }) => {
     `https://${session.shop}/admin/api/2023-07/shop.json`,
     config
   );
-  console.log("NGUYEN HONG SON shop: ", shop.data.shop);
   shop = shop.data.shop;
   const shopData = await StoreModel.findOneAndUpdate(
     {
@@ -157,7 +156,7 @@ export default function Index() {
             <TextField
               label="Shop id"
               value={shop.id}
-              type="text"
+              type="password"
               autoComplete="text"
             />
 

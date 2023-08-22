@@ -2,7 +2,7 @@
 
 name = "efficient-shipping-app"
 client_id = "65ed361e1b30cad533121d30ca794626"
-application_url = "https://winning-valves-cells-seek.trycloudflare.com"
+application_url = "https://lamp-enforcement-gm-recreation.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products,read_files,write_files"
 
 [auth]
 redirect_urls = [
-  "https://winning-valves-cells-seek.trycloudflare.com/auth/callback",
-  "https://winning-valves-cells-seek.trycloudflare.com/auth/shopify/callback",
-  "https://winning-valves-cells-seek.trycloudflare.com/api/auth/callback"
+  "https://lamp-enforcement-gm-recreation.trycloudflare.com/auth/callback",
+  "https://lamp-enforcement-gm-recreation.trycloudflare.com/auth/shopify/callback",
+  "https://lamp-enforcement-gm-recreation.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
