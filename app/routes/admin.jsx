@@ -6,10 +6,13 @@ import CustomPolarisAppProvider from "~/components/CustomPolarisAppProvider";
 import indexStyles from "./_index/style.css";
 import { useCallback, useState } from "react";
 import StoreServer from "~/server/store.server";
+import { requireUserId } from "~/server/auth.server";
 
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
 export async function loader({ request }) {
+    await requireUserId(request, '/');
+
     const merchants = await StoreServer.getAllStores({
         limit: 25,
         page: 1,

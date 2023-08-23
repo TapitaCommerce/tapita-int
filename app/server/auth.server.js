@@ -32,9 +32,21 @@ export const createUserSession = async (userId, redirectTo) => {
     })
 }
 
-class AuthServer {
-    
+export const requireUserId = async (request, redirectTo) => {
+    const session = await getUserSession(request);
+    const userId = session.get("userId");
+    if(!userId) {
+        const searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
+        throw redirect(`/?${searchParams}`);
+    }
+    return userId;
+}
 
+const getUserSession = (request) => {
+    return storage.getSession(request.headers.get("Cookie"));
+} 
+
+class AuthServer {
     static async signup(payload) {
         const { username, password, email } = payload;
         const hashedPassword = await bcrypt.hash(password, 10);
