@@ -5,12 +5,12 @@ import { ActionList, Button, IndexTable, LegacyCard, Page, Popover, Text, useInd
 import CustomPolarisAppProvider from "~/components/CustomPolarisAppProvider";
 import indexStyles from "./_index/style.css";
 import { useCallback, useState } from "react";
-import StoreService from "~/services/store.service";
+import StoreServer from "~/server/store.server";
 
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
 export async function loader({ request }) {
-    const merchants = await StoreService.getAllStores({
+    const merchants = await StoreServer.getAllStores({
         limit: 25,
         page: 1,
         filter: {}

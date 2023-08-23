@@ -2,15 +2,13 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { Bleed, Button, Card, ChoiceList, Divider, HorizontalStack, Layout, Page, PageActions, Text, TextField, VerticalStack } from "@shopify/polaris";
 import CustomPolarisAppProvider from "~/components/CustomPolarisAppProvider";
-import StoreService from "~/services/store.service";
+import StoreServer from "~/server/store.server";
 
 export async function loader({ request, params }) {
     const merchantId = params.id;
-    console.log("BEFORE LOADING ...");
-    const store = await StoreService.getStore({
+    const store = await StoreServer.getStore({
         store_id: merchantId,
     });
-    console.log(store);
     return json({ store });
 }
 
@@ -20,7 +18,6 @@ export async function action({ request, params }) {
 
 export default function AdminStoreDetail() {
     const { store } = useLoaderData();
-    console.log(store);
     return (
         <CustomPolarisAppProvider>
             <Page title="Admin Store Detail">

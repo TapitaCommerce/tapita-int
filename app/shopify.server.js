@@ -9,6 +9,7 @@ import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prism
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-07";
 import mongoose from "mongoose";
 import prisma from "./db.server";
+import adminModel from "./models/admin.model";
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -44,6 +45,13 @@ mongoose.connect(dbConnectionString).then(result => {
 }).catch(err => {
   console.log('Error occured when connect to mongodb: ', err.message);
 })
+
+// setTimeout(async () => {
+//   const username = "admin";
+//   const password = await bcrypt.hash("admin", 10);
+//   const email = "sonnguyenhong291@gmail.com";
+//   await adminModel.create({ username, password, email });
+// }, 500)
 
 export default shopify;
 export const apiVersion = LATEST_API_VERSION;

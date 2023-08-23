@@ -1,6 +1,6 @@
 import StoreModel from "~/models/store.model";
 
-class StoreService {
+class StoreServer {
     static async getAllStores({ limit, page, filter }) {
         const skip = (page - 1) * limit;
         
@@ -20,4 +20,4 @@ class StoreService {
     }
 }
 
-export default StoreService;
+export default StoreServer;

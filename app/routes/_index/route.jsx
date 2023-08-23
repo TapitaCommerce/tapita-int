@@ -14,6 +14,7 @@ import {
 } from "@shopify/polaris";
 import CustomPolarisAppProvider from "~/components/CustomPolarisAppProvider";
 import { useState } from "react";
+import AuthServer from "~/server/auth.server";
 
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
@@ -27,21 +28,11 @@ export async function loader({ request }) {
 }
 
 export async function action({ request }) {
-  const correctUsername = "admin";
-  const correctPassword = "admin";
   if(request.method === "POST") {
     const data = {
       ...Object.fromEntries(await request.formData()),
     };
-
-    if(data.username !== correctUsername) {
-      return json({ error: 'Incorrect username' });
-    } 
-    if(data.password !== correctPassword) {
-      return json({ error: 'Incorrect password' });
-    }
-    
-    return redirect('/admin');
+    return await AuthServer.login({ username: data.username, password: data.password });
   }
 
   return null;
