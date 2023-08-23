@@ -28,6 +28,15 @@ body {
   justify-content: center; 
 }
 
+.Polaris-Box--listReset {
+  display: flex;
+  flex-direction: column;
+}
+
+p.Polaris-Text--root.Polaris-Text--headingXs {
+  padding-bottom: 0;
+}
+
 h1,
 p {
   padding: 0;
@@ -75,6 +84,8 @@ ul {
   margin: 0;
   display: flex;
   gap: 2rem;
+  row-gap: 0;
+  column-gap: 0;
 }
 
 li {
