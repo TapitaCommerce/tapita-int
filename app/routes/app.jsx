@@ -11,7 +11,7 @@ export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export async function loader({ request }) {
   await authenticate.admin(request);
-  
+
   return json({
     polarisTranslations: require("@shopify/polaris/locales/en.json"),
     apiKey: process.env.SHOPIFY_API_KEY,
@@ -31,7 +31,10 @@ export default function App() {
         <Link to="/app" rel="home">
           Home
         </Link>
+        <Link to="/app/pageUpdate">Page Update</Link>
+        <Link to="/app/productUpdate">Product Update</Link>
         <Link to="/app/additional">Additional page</Link>
+        <Link to="/app/updateDescriptionTitle">Update Description/Title</Link>
       </ui-nav-menu>
       <PolarisAppProvider
         i18n={polarisTranslations}

@@ -71,7 +71,7 @@ export const loader = async ({ request }) => {
     {
       upsert: true,
     });
-  
+  console.log("NGUYEN HONG SON data: ", shopData);
   return json({ shop: shopData });
 };
 
