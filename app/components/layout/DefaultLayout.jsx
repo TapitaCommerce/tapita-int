@@ -1,10 +1,12 @@
-import { useSubmit } from "@remix-run/react";
+import { redirect } from "@remix-run/node";
+import { useNavigate, useSubmit } from "@remix-run/react";
 import { ActionList, Avatar, Frame, Icon, Text, TopBar } from "@shopify/polaris";
 import { AnalyticsBarHorizontalMinor, QuestionMarkMajor, ArrowRightMinor } from "@shopify/polaris-icons";
 import { useCallback, useState } from "react";
 import { logout } from "~/server/auth.server";
 
 export default function DefaultLayout({ children, handleLogout }) {
+    const navigate = useNavigate();
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [isSecondaryMenuOpen, setIsSecondaryMenuOpen] = useState(false);
     const [isSearchActive, setIsSearchActive] = useState(false);
@@ -38,7 +40,7 @@ export default function DefaultLayout({ children, handleLogout }) {
       width: 124,
       topBarSource:
         'https://cdn.shopify.com/s/files/1/0446/6937/files/jaded-pixel-logo-color.svg?6215648040070010999',
-      url: '#',
+      url: '/',
       accessibilityLabel: 'Jaded Pixel',
     };
   
@@ -46,7 +48,7 @@ export default function DefaultLayout({ children, handleLogout }) {
       <TopBar.UserMenu
         actions={[
           {
-            items: [{ content: 'Admin Management', icon: AnalyticsBarHorizontalMinor }],
+            items: [{ content: 'Admin Management', icon: AnalyticsBarHorizontalMinor, onAction: () => navigate('/admin/management') }],
           },
           {
             items: [{ content: 'Logout', icon: ArrowRightMinor, onAction: () => handleLogout() }],

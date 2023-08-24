@@ -85,21 +85,33 @@ export async function logout(request) {
 
 class AuthServer {
     static async signup(payload) {
-        const { username, password, email } = payload;
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const existedAdmin = await AdminService.getAdmin({ filter: {
-            username: username
-        } });
-
-        if(existedAdmin) {
+        try {
+            const { username, password, confirmedPassword, email } = payload;
+            if(password !== confirmedPassword) {
+                return {
+                    error: 'Password and confirmedPassword must be matched'
+                }
+            }
+    
+            const hashedPassword = await bcrypt.hash(password, 10);
+    
+            const existedAdmin = await AdminService.getAdmin({ filter: {
+                username: username
+            } });
+    
+            if(existedAdmin) {
+                return {
+                    error: 'Username is existed'
+                }
+            }
+    
+            const newAdmin = await AdminService.createAdmin({ username, password: hashedPassword, email });
+            return getInfoData({ fields: [ 'username', 'email' ], object: newAdmin });
+        } catch {
             return {
-                error: 'Username is existed'
+                error: 'Error when sign up in auth server' 
             }
         }
-
-        const newAdmin = await AdminService.createAdmin({ username, password: hashedPassword, email });
-        return getInfoData({ fields: [ 'username', 'email' ], object: newAdmin });
     }
 
     static async login({ username, password }) {
