@@ -14,7 +14,7 @@ import {
 } from "@shopify/polaris";
 import CustomPolarisAppProvider from "~/components/CustomPolarisAppProvider";
 import { useState } from "react";
-import AuthServer from "~/server/auth.server";
+import AuthServer, { getUser } from "~/server/auth.server";
 
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
@@ -22,6 +22,11 @@ export async function loader({ request }) {
   const url = new URL(request.url);
   if (url.searchParams.get("shop")) {
     throw redirect(`/app?${url.searchParams.toString()}`);
+  }
+
+  const user = await getUser(request);
+  if(user) {
+    return redirect('/admin');
   }
   
   return null;

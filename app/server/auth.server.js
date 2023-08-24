@@ -3,6 +3,7 @@ import AdminService from "./admin.server";
 import { getInfoData } from "~/utils";
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import { COOKIE_NAME } from "~/constants/string.constant";
+import AdminServer from "./admin.server";
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
@@ -45,6 +46,42 @@ export const requireUserId = async (request, redirectTo) => {
 const getUserSession = (request) => {
     return storage.getSession(request.headers.get("Cookie"));
 } 
+
+async function getUserId(request) {
+    const session = await getUserSession(request);
+    const userId = session.get('userId');
+    if(!userId || typeof userId !== "string") {
+        return null;
+    }
+    return userId;
+}
+
+export async function getUser(request) {
+    const userId = await getUserId(request);
+    if(typeof userId !== "string") {
+        return null;
+    }
+
+    try {
+        const admin = await AdminServer.getAdmin({ filter: { _id: userId } });
+        if(admin) {
+            return getInfoData({ fields: [ 'username', 'email' ], object: admin })
+        } else {
+            return logout(request);
+        }
+    } catch {
+        throw logout(request);
+    }
+}
+
+export async function logout(request) {
+    const session = await getUserSession(request);
+    return redirect('/', {
+        headers: {
+            "Set-Cookie": await storage.destroySession(session)
+        }
+    });
+}
 
 class AuthServer {
     static async signup(payload) {

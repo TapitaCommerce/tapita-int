@@ -28,6 +28,25 @@ body {
   justify-content: center; 
 }
 
+.Polaris-TopBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Polaris-TopBar-UserMenu__Details {
+  display: none;
+}
+
+.Polaris-TopBar__RightContent {
+  display: flex;
+}
+
+.Polaris-Box.Polaris-Box--listReset {
+  background-color: #fff;
+  border-radius: 10px;
+}
+
 .Polaris-Box--listReset {
   display: flex;
   flex-direction: column;
