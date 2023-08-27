@@ -83,6 +83,10 @@ export async function logout(request) {
     });
 }
 
+export async function authenticated(request, redirectTo) {
+    console.log(request.headers);
+}
+
 class AuthServer {
     static async signup(payload) {
         try {

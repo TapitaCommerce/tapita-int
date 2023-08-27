@@ -1,5 +1,5 @@
 import { json, redirect } from "@remix-run/node";
-import { Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react";
+import { Form, useActionData, useLoaderData, useNavigate, useSubmit } from "@remix-run/react";
 
 import { login } from "../../shopify.server";
 
@@ -15,8 +15,25 @@ import {
 import CustomPolarisAppProvider from "~/components/CustomPolarisAppProvider";
 import { useState } from "react";
 import AuthServer, { getUser } from "~/server/auth.server";
+import { useQuery, gql, useMutation } from '@apollo/client';
 
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
+
+const GET_ALL_STORES = gql`
+  query GetAllStores {
+    getAllStores {
+      id
+      name
+      email
+    }
+  }
+`;
+
+const LOGIN_MUTATION = gql`
+  mutation Login($input: LoginInput) {
+    login(input: $input)
+  }
+`;
 
 export async function loader({ request }) {
   const url = new URL(request.url);
@@ -44,19 +61,54 @@ export async function action({ request }) {
 }
 
 export default function App() {
-  const error = useActionData()?.error || {};
+  // const error = useActionData()?.error || {};
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const submit = useSubmit();
+  const navigate = useNavigate();
 
-  const handleLogin = () => {
-    submit({
-      username: username,
-      password: password,
-    }, {
-      method: "POST"
-    });
+  const [login, { data, loading, error }] = useMutation(LOGIN_MUTATION);
+
+  if (loading) return 'Submitting...';
+
+  if (error) return `Submission error! ${error.message}`;
+
+  // const handleLogin = () => {
+  //   submit({
+  //     username: username,
+  //     password: password,
+  //   }, {
+  //     method: "POST"
+  //   });
+  // }
+
+  const handleLogin = async () => {
+    const response = await login({ variables: {
+      input: {
+        username, 
+        password,
+      }
+    } })
+
+    if (loading) {
+      console.log('Logging in ... ');
+    } else if (error) {
+      console.log(error.message)
+    } else {
+      console.log(typeof response?.data?.login); 
+  
+      // if(response?.data?.login) {
+        localStorage.removeItem('accessToken');
+        localStorage.setItem('accessToken', response?.data?.login);
+        navigate('/admin');
+      // }
+    }
   }
+
+  // const { loading, error, data } = useQuery(GET_ALL_STORES);
+  // console.log(loading);
+  // console.log(error);
+  // console.log(data);
 
   return (
     <CustomPolarisAppProvider>

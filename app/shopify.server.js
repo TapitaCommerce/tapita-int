@@ -9,7 +9,15 @@ import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prism
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-07";
 import mongoose from "mongoose";
 import prisma from "./db.server";
-import adminModel from "./models/admin.model";
+import AdminModel from "./models/admin.model";
+import StoreModel from "./models/store.model";
+import express from "express"
+import { graphqlHTTP } from "express-graphql"
+import { buildSchema } from "graphql"
+import cors from "cors";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { redirect } from "@remix-run/node";
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -37,14 +45,189 @@ const shopify = shopifyApp({
     : {}),
 });
 
+// Construct a schema, using GraphQL schema language
+var schema = buildSchema(`
+  input LoginInput {
+    username: String
+    password: String
+  }
+
+  input GetStoreInput {
+    id: String
+  }
+
+  input GetAdminInput {
+    id: String
+  }
+
+  type Store {
+    id: String,
+    name: String,
+    email: String,
+    shop: String,
+    domain: String,
+    scope: String,
+    country: String,
+    customer_email: String,
+    myshopify_domain: String,
+    plan_name: String,
+    plan_display_name: String,
+    shop_owner: String,
+    iana_timezone: String,
+    currency: String,
+    address1: String,
+    address2: String,
+    phone: String,
+    created_at: String,
+    accessToken: String
+  }
+
+  type Admin {
+    id: String,
+    username: String,
+    password: String,
+    email: String
+  }
+
+  type Query {
+    hello: String
+    getAllStores: [Store]
+    getStore(input: GetStoreInput): Store
+    getAllAdmins: [Admin]
+    getAdmin(input: GetAdminInput): Admin
+  }
+  
+  type Mutation {
+    login(input: LoginInput): String
+  }
+`)
+
+// The root provides a resolver function for each API endpoint
+var root = {
+  hello: () => {
+    return "Hello world!"
+  },
+  getStore: async (args, request) => {
+    const bearerToken = request.headers.authorization;
+    if(!bearerToken) {
+      console.log(123);
+      throw new Error('Not authenticated')
+    } else {
+      const token = bearerToken.split(' ')[1];
+      const decoded = await jwt.verify(token, process.env.SECRET_KEY);
+      console.log('DECODED: ', decoded);
+      if(!decoded) {
+        throw new Error('Not authenticated')
+      }
+    }
+    console.log(args);
+    const store = await StoreModel.findOne({ id: args.input.id });
+    return store;
+  },
+  getAllStores: async (args, request) => {
+    // console.log('args', args);
+    const bearerToken = request.headers.authorization;
+    if(!bearerToken) {
+      console.log(123);
+      throw new Error('Not authenticated')
+    } else {
+      const token = bearerToken.split(' ')[1];
+      const decoded = await jwt.verify(token, process.env.SECRET_KEY);
+      console.log('DECODED: ', decoded);
+      if(!decoded) {
+        throw new Error('Not authenticated')
+      }
+    }
+    const stores = await StoreModel.find({});
+    return stores;
+  },
+  getAdmin: async (args, request) => {
+    const bearerToken = request.headers.authorization;
+    if(!bearerToken) {
+      console.log(123);
+      throw new Error('Not authenticated')
+    } else {
+      const token = bearerToken.split(' ')[1];
+      const decoded = await jwt.verify(token, process.env.SECRET_KEY);
+      console.log('DECODED: ', decoded);
+      if(!decoded) {
+        throw new Error('Not authenticated')
+      }
+    }
+    console.log(args);
+    const admin = await AdminModel.findOne({ id: args.input.id });
+    return admin;
+  },
+  getAllAdmins: async (args, request) => {
+    const bearerToken = request.headers.authorization;
+    if(!bearerToken) {
+      console.log(123);
+      throw new Error('Not authenticated')
+    } else {
+      const token = bearerToken.split(' ')[1];
+      const decoded = await jwt.verify(token, process.env.SECRET_KEY);
+      console.log('DECODED: ', decoded);
+      if(!decoded) {
+        throw new Error('Not authenticated')
+      }
+    }
+    const admins = await AdminModel.find({});
+    return admins;
+  },
+  login: async ({ input }, request) => {
+    const { username, password } = input;
+    // console.log(username);
+    // console.log(password);
+
+    const existedAdmin = await AdminModel.findOne({ username: username });
+    if(!existedAdmin) {
+      throw new Error('Username is not existed');
+    }
+
+    const isValidPassword = await bcrypt.compare(password, existedAdmin.password);
+
+    if(!isValidPassword) {
+      throw new Error('Wrong password');
+    }
+
+    const payload = {
+      userId: existedAdmin._id,
+    }
+
+    const accessToken = await jwt.sign(payload, process.env.SECRET_KEY, {
+      expiresIn: '24h',
+    })
+
+    return accessToken;
+  }
+}
+
+const app = express();
+app.use(express.json());
+app.use(cors());
+
+const loggingMiddleware = (req, res, next) => {
+  console.log('HEADER: ', req.headers);
+  next();
+}
+app.use(loggingMiddleware);
+app.use('/graphql', graphqlHTTP({
+  schema: schema,
+  rootValue: root,
+  graphiql: true,
+}))
+
 const dbConnectionString = 'mongodb://localhost:27017/tapita_training';
 mongoose.set('debug', true);
 mongoose.set('debug', { color: true });
 mongoose.connect(dbConnectionString).then(result => {
   console.log('Connect to mongodb successfully');
+  app.listen(4000, () => {
+    console.log('Server is running at port 4000');
+  })
 }).catch(err => {
   console.log('Error occured when connect to mongodb: ', err.message);
-})
+});
 
 // setTimeout(async () => {
 //   const username = "admin";

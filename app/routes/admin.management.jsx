@@ -5,21 +5,18 @@ import { logout, requireUserId } from "~/server/auth.server";
 import indexStyles from "./_index/style.css";
 import AdminServer from "~/server/admin.server";
 import { json, redirect } from "@remix-run/node";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { gql, useQuery } from "@apollo/client";
 
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
 export async function loader({ request }) {
-    await requireUserId(request, '/');
+    // await requireUserId(request, '/');
     
-    const admins = await AdminServer.getAdmins({
-        limit: 25,
-        page: 1,
-        filter: {}
-    });
-
-    return json({ admins });
+    return null;
 }
+
+
 
 export async function action({ request }) {
     if(request.method === "POST") {
@@ -48,15 +45,33 @@ export async function action({ request }) {
     return null;
 }
 
+const GET_ALL_ADMINS = gql`
+  query GetAllAdmins {
+    getAllAdmins {
+      id
+      username
+      password
+      email
+    }
+  }
+`;
+
 export default function AdminManagement() {
     const submit = useSubmit();
-    const { admins } = useLoaderData();
     const [selectedAdminId, setSelectedAdminId] = useState(null);
     const [modalActive, setModalActive] = useState(false);
     const navigate = useNavigate();
 
     const toggleModal = useCallback(() => setModalActive((modalActive) => !modalActive), []);
+    const { loading, error, data } = useQuery(GET_ALL_ADMINS);
 
+    useEffect(() => {
+        if(error?.message === 'Not authenticated' || error?.message === 'invalid token') {
+            console.log(error.message);
+            navigate('/');
+        }
+    }, [error])
+    
     const handlePopoverOpen = (adminId) => {
         setSelectedAdminId(adminId);
     }
@@ -74,53 +89,68 @@ export default function AdminManagement() {
         plural: 'admins',
     };
 
-    const rowMarkup = admins.map(
-        ( admin, index ) => (
-          <IndexTable.Row
-            id={admin._id}
-            key={admin._id}
-            position={index}
-          >
-            <IndexTable.Cell>
-                <Text variant="bodyMd" fontWeight="bold" as="span">
-                    {admin.username}
-                </Text>
-            </IndexTable.Cell>
-            <IndexTable.Cell>{admin.email}</IndexTable.Cell>
-            <IndexTable.Cell>
-                <Popover
-                    active={selectedAdminId === admin._id}
-                    activator={
-                        <Button onClick={() => handlePopoverOpen(admin._id)}>
-                            Actions
-                        </Button>
-                    }
-                    autofocusTarget="first-node"
-                    onClose={handlePopoverClose}
-                >
-                    <ActionList
-                        sections={[
-                            {
-                                items: [
-                                    {
-                                        content: 'Detail',
-                                        icon: StoreDetailsMinor,
-                                        onAction: () => navigate(`/admin/${admin._id}`)
-                                    },
-                                    {
-                                        content: 'Delete', 
-                                        icon: DeleteMinor,
-                                        onAction: () => toggleModal()
-                                    },
-                                ],
-                            },
-                        ]}
-                    />
-                </Popover>
-            </IndexTable.Cell>
-          </IndexTable.Row>
-        ),
-    );
+    let rowMarkup;
+
+    if(data) {
+        console.log(data?.getAllAdmins);
+        rowMarkup = data?.getAllAdmins.map(
+            ( admin, index ) => (
+              <IndexTable.Row
+                id={admin._id}
+                key={admin._id}
+                position={index}
+              >
+                <IndexTable.Cell>
+                    <Text variant="bodyMd" fontWeight="bold" as="span">
+                        {admin.username}
+                    </Text>
+                </IndexTable.Cell>
+                <IndexTable.Cell>{admin.email}</IndexTable.Cell>
+                <IndexTable.Cell>
+                    <Popover
+                        active={selectedAdminId === admin._id}
+                        activator={
+                            <Button onClick={() => handlePopoverOpen(admin._id)}>
+                                Actions
+                            </Button>
+                        }
+                        autofocusTarget="first-node"
+                        onClose={handlePopoverClose}
+                    >
+                        <ActionList
+                            sections={[
+                                {
+                                    items: [
+                                        {
+                                            content: 'Detail',
+                                            icon: StoreDetailsMinor,
+                                            onAction: () => navigate(`/admin/${admin._id}`)
+                                        },
+                                        {
+                                            content: 'Delete', 
+                                            icon: DeleteMinor,
+                                            onAction: () => toggleModal()
+                                        },
+                                    ],
+                                },
+                            ]}
+                        />
+                    </Popover>
+                </IndexTable.Cell>
+              </IndexTable.Row>
+            ),
+        );
+    } else {
+        rowMarkup = (
+            <IndexTable.Row
+                id={"Loading"}
+                position={1}
+            >
+                Loading
+            </IndexTable.Row>
+        )
+    }
+
 
     return (
         <Page 
@@ -168,7 +198,7 @@ export default function AdminManagement() {
             <LegacyCard>
                 <IndexTable
                     resourceName={resourceName}
-                    itemCount={admins.length}
+                    itemCount={data?.getAllAdmins.length || 0}
                     headings={[
                         {title: 'Username'},
                         {title: 'Email'},

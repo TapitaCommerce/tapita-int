@@ -1,0 +1,37 @@
+type Admin {
+    id: Int!
+    username: String!
+    password: String!
+    email: String
+}
+
+type Store {
+    id: String,
+    name: String,
+    email: String,
+    shop: String,
+    domain: String,
+    scope: String,
+    country: String,
+    customer_email: String,
+    myshopify_domain: String,
+    plan_name: String,
+    plan_display_name: String,
+    shop_owner: String,
+    iana_timezone: String,
+    currency: String,
+    address1: String,
+    address2: String,
+    phone: String,
+    created_at: String,
+    accessToken: String
+}
+
+# ROOT TYPE
+type Query {
+    getAllStores: [Store]
+}
+
+type Mutation {
+    login(username: String!, password: String!): String!
+}

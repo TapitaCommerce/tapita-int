@@ -11,7 +11,7 @@ import AdminServer from "~/server/admin.server";
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
 export async function loader({ request, params }) {
-    await requireUserId(request, '/');
+    // await requireUserId(request, '/');
     let admin = null;
     
     if(params.id !== 'new') {

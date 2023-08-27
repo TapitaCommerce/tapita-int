@@ -13,7 +13,7 @@ import { handleLogout } from "~/utils/auth.util";
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
 export async function loader({ request }) {
-    await requireUserId(request, '/');
+    // await requireUserId(request, '/');
 
     return null;
 }
