@@ -60,6 +60,22 @@ var schema = buildSchema(`
     id: String
   }
 
+  input CreateAdminInput {
+    username: String
+    password: String
+    confirmedPassword: String
+    email: String
+  }
+  input UpdateAdminInput {
+    id: String
+    username: String
+    email: String
+  }
+
+  input DeleteAdminInput {
+    id: String
+  }
+
   type Store {
     id: String,
     name: String,
@@ -99,6 +115,9 @@ var schema = buildSchema(`
   
   type Mutation {
     login(input: LoginInput): String
+    createAdmin(input: CreateAdminInput): Admin
+    updateAdmin(input: UpdateAdminInput): Admin
+    deleteAdmin(input: DeleteAdminInput): Admin
   }
 `)
 
@@ -155,7 +174,8 @@ var root = {
       }
     }
     console.log(args);
-    const admin = await AdminModel.findOne({ id: args.input.id });
+    const admin = await AdminModel.findOne({ _id: args.input.id });
+    console.log(admin)
     return admin;
   },
   getAllAdmins: async (args, request) => {
@@ -199,6 +219,71 @@ var root = {
     })
 
     return accessToken;
+  },
+  createAdmin: async ({ input }, request) => {
+    const bearerToken = request.headers.authorization;
+    if(!bearerToken) {
+      console.log(123);
+      throw new Error('Not authenticated')
+    } else {
+      const token = bearerToken.split(' ')[1];
+      const decoded = await jwt.verify(token, process.env.SECRET_KEY);
+      console.log('DECODED: ', decoded);
+      if(!decoded) {
+        throw new Error('Not authenticated')
+      }
+    }
+
+    const { username, password, confirmedPassword, email } = input;
+    if(password !== confirmedPassword) {
+      throw new Error('Password and confirmed password must be matched');
+    }
+
+    const existed = await AdminModel.findOne({ username: username });
+    if(existed) {
+        throw new Error('Username has already been registed');
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newAdmin = await AdminModel.create({ username, password: hashedPassword, email });
+    return newAdmin;
+  },
+  updateAdmin: async ({ input }, request) => {
+    const bearerToken = request.headers.authorization;
+    if(!bearerToken) {
+      console.log(123);
+      throw new Error('Not authenticated')
+    } else {
+      const token = bearerToken.split(' ')[1];
+      const decoded = await jwt.verify(token, process.env.SECRET_KEY);
+      console.log('DECODED: ', decoded);
+      if(!decoded) {
+        throw new Error('Not authenticated')
+      }
+    }
+    console.log(123);
+    const updatedAdmin = await AdminModel.findByIdAndUpdate(new mongoose.Types.ObjectId(input.id), {
+      username: input.username,
+      email: input.email
+    });
+    return updatedAdmin;
+  },
+  deleteAdmin: async ({ input }, request) => {
+    const bearerToken = request.headers.authorization;
+    if(!bearerToken) {
+      console.log(123);
+      throw new Error('Not authenticated')
+    } else {
+      const token = bearerToken.split(' ')[1];
+      const decoded = await jwt.verify(token, process.env.SECRET_KEY);
+      console.log('DECODED: ', decoded);
+      if(!decoded) {
+        throw new Error('Not authenticated')
+      }
+    }
+    console.log(input)
+    const deletedAdmin = await AdminModel.findByIdAndDelete(new mongoose.Types.ObjectId(input.id));
+    return deletedAdmin;
   }
 }
 

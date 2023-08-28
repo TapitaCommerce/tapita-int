@@ -2,7 +2,7 @@
 
 name = "efficient-shipping-app"
 client_id = "65ed361e1b30cad533121d30ca794626"
-application_url = "https://msg-sponsorship-toddler-unions.trycloudflare.com"
+application_url = "https://brad-secondary-appraisal-execute.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products,read_files,write_files"
 
 [auth]
 redirect_urls = [
-  "https://msg-sponsorship-toddler-unions.trycloudflare.com/auth/callback",
-  "https://msg-sponsorship-toddler-unions.trycloudflare.com/auth/shopify/callback",
-  "https://msg-sponsorship-toddler-unions.trycloudflare.com/api/auth/callback"
+  "https://brad-secondary-appraisal-execute.trycloudflare.com/auth/callback",
+  "https://brad-secondary-appraisal-execute.trycloudflare.com/auth/shopify/callback",
+  "https://brad-secondary-appraisal-execute.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

@@ -6,7 +6,7 @@ import indexStyles from "./_index/style.css";
 import AdminServer from "~/server/admin.server";
 import { json, redirect } from "@remix-run/node";
 import { useCallback, useEffect, useState } from "react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
@@ -56,6 +56,16 @@ const GET_ALL_ADMINS = gql`
   }
 `;
 
+const DELETE_ADMIN = gql`
+    mutation DeleteAdmin($input: DeleteAdminInput) {
+        deleteAdmin(input: $input) {
+            id
+            username
+            email
+        }
+    }
+`
+
 export default function AdminManagement() {
     const submit = useSubmit();
     const [selectedAdminId, setSelectedAdminId] = useState(null);
@@ -64,6 +74,12 @@ export default function AdminManagement() {
 
     const toggleModal = useCallback(() => setModalActive((modalActive) => !modalActive), []);
     const { loading, error, data } = useQuery(GET_ALL_ADMINS);
+
+    const [deleteAdmin, { loading: deleteAdminLoading, error: deleteAdminError, data: deleteAdminData }] = useMutation(DELETE_ADMIN);
+
+    if(data) {
+        console.log(data);
+    }
 
     useEffect(() => {
         if(error?.message === 'Not authenticated' || error?.message === 'invalid token') {
@@ -81,7 +97,16 @@ export default function AdminManagement() {
     }
 
     const handleDeleteAdmin = async () => {
-        submit({ id: selectedAdminId }, { method: "DELETE" });
+        const response = await deleteAdmin({ variables: {
+            input: {
+                id: selectedAdminId
+            }
+        } })
+
+        if(response?.data?.deleteAdmin) {
+            window.location.reload();
+        }
+        // submit({ id: selectedAdminId }, { method: "DELETE" });
     }
 
     const resourceName = {
@@ -96,8 +121,8 @@ export default function AdminManagement() {
         rowMarkup = data?.getAllAdmins.map(
             ( admin, index ) => (
               <IndexTable.Row
-                id={admin._id}
-                key={admin._id}
+                id={admin.id}
+                key={admin.id}
                 position={index}
               >
                 <IndexTable.Cell>
@@ -108,9 +133,9 @@ export default function AdminManagement() {
                 <IndexTable.Cell>{admin.email}</IndexTable.Cell>
                 <IndexTable.Cell>
                     <Popover
-                        active={selectedAdminId === admin._id}
+                        active={selectedAdminId === admin.id}
                         activator={
-                            <Button onClick={() => handlePopoverOpen(admin._id)}>
+                            <Button onClick={() => handlePopoverOpen(admin.id)}>
                                 Actions
                             </Button>
                         }
@@ -124,7 +149,7 @@ export default function AdminManagement() {
                                         {
                                             content: 'Detail',
                                             icon: StoreDetailsMinor,
-                                            onAction: () => navigate(`/admin/${admin._id}`)
+                                            onAction: () => navigate(`/admin/${admin.id}`)
                                         },
                                         {
                                             content: 'Delete', 
