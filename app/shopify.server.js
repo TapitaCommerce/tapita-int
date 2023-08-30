@@ -10,7 +10,6 @@ import { restResources } from "@shopify/shopify-api/rest/admin/2023-07";
 import mongoose from "mongoose";
 import prisma from "./db.server";
 import adminModel from "./models/admin.model";
-
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
   apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
