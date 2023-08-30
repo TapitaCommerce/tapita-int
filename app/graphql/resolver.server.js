@@ -23,7 +23,6 @@ export const resolver = {
         return "Hello World";
     },
     getAllStores: async (args, request) => {
-        // console.log('args', args);
         const bearerToken = request.headers.authorization;
         const isAuthenticated = await verifyToken(bearerToken);
         if(isAuthenticated) {

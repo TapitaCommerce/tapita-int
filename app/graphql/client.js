@@ -27,8 +27,6 @@ export const helloWorld = async () => {
 
 export const login = async ({ username, password }) => {
     try {
-        console.log(username)
-        console.log(password);
         const response = await client.mutate({
             mutation: LOGIN_MUTATION,
             variables: {
@@ -49,11 +47,6 @@ export const login = async ({ username, password }) => {
             message: err.message
         })
     }
-    // console.log(response);
-    // if(response.errors) {
-    //     console.log('ERRORRRRR');
-    // }
-    // return response;
 }
 
 export default client;

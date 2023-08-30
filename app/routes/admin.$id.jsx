@@ -71,7 +71,6 @@ export default function Admin() {
     let AdminInformation;
 
     if(getAdminData?.getAdmin) {
-        console.log('NGUYEN HONG SON form state', formState);
         AdminInformation = (
             <>
                 <TextField

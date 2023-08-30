@@ -20,7 +20,7 @@ export default function AdminManagement() {
     const [error, setError] = useState(null);
 
     const { loading: getAllAdminsLoading, error: getAllAdminsError, data: getAllAdminsData } = useQuery(GET_ALL_ADMINS);
-    console.log(getAllAdminsData);
+    
     const [deleteAdmin, { loading: deleteAdminLoading, error: deleteAdminError, data: deleteAdminData }] = useMutation(DELETE_ADMIN);
 
     const toggleModal = useCallback(() => setModalActive((modalActive) => !modalActive), []);
