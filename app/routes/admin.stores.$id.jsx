@@ -1,29 +1,160 @@
 import { json } from "@remix-run/node";
-import { useLoaderData, useSubmit } from "@remix-run/react";
-import { Bleed, Button, Card, ChoiceList, Divider, HorizontalStack, Layout, Page, PageActions, Text, TextField, VerticalStack } from "@shopify/polaris";
-import CustomPolarisAppProvider from "~/components/CustomPolarisAppProvider";
-import DefaultLayout from "~/components/layout/DefaultLayout";
-import { logout, requireUserId } from "~/server/auth.server";
-import StoreServer from "~/server/store.server";
-import { handleLogout } from "~/utils/auth.util";
+import { useLoaderData } from "@remix-run/react";
+import { Bleed, Button, Card, Divider, HorizontalStack, Layout, Page, PageActions, Spinner, Text, TextField, VerticalStack } from "@shopify/polaris";
 import indexStyles from "./_index/style.css";
+import { useQuery } from "@apollo/client";
+import { GET_STORE } from "~/graphql/query";
 
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
 export async function loader({ request, params }) {
-    await requireUserId(request, '/');
-
-    const merchantId = params.id;
-    const store = await StoreServer.getStore({
-        store_id: merchantId,
-    });
-    return json({ store });
+    return json({ id: params.id });
 }
 
 export default function AdminStoreDetail() {
-    const { store } = useLoaderData();
+    const { id } = useLoaderData();
+    const { loading, error, data } = useQuery(GET_STORE, {
+        variables: {
+            input: {
+                id: id
+            }
+        }
+    });
+    
+    let StoreInformation;
+
+    if(data?.getStore) {
+        StoreInformation = (
+            <>
+                <TextField
+                    label="Store id"
+                    value={data?.getStore.id}
+                    type="text"
+                    autoComplete="text"
+                />
+
+                <TextField
+                    label="Store name"
+                    value={data?.getStore.name}
+                    type="text"
+                    autoComplete="text"
+                />
+
+                <TextField
+                    label="Store email"
+                    value={data?.getStore.email}
+                    type="email"
+                    autoComplete="email"
+                />
+
+                <TextField
+                    label="Store domain"
+                    value={data?.getStore.domain}
+                    type="text"
+                    autoComplete="text"
+                />
+
+                <TextField
+                    label="Store scope"
+                    value={data?.getStore.domain}
+                    type="text"
+                    autoComplete="text"
+                />
+
+                <TextField
+                    label="Store country"
+                    value={data?.getStore.domain}
+                    type="text"
+                    autoComplete="text"
+                />
+
+                <TextField
+                    label="Store customer email"
+                    value={data?.getStore.domain}
+                    type="text"
+                    autoComplete="text"
+                />
+
+                <TextField
+                    label="Shopify domain"
+                    value={data?.getStore.myshopify_domain}
+                    type="text"
+                    autoComplete="text"
+                />
+
+                <TextField
+                    label="App plan name"
+                    value={data?.getStore.plan_name}
+                    type="text"
+                    autoComplete="text"
+                />
+
+                <TextField
+                    label="App plan display name"
+                    value={data?.getStore.plan_display_name}
+                    type="text"
+                    autoComplete="text"
+                />
+
+                <TextField
+                    label="Store owner"
+                    value={data?.getStore.shop_owner}
+                    type="text"
+                    autoComplete="text"
+                />
+
+                <TextField
+                    label="Store iana timezone"
+                    value={data?.getStore.iana_timezone}
+                    type="text"
+                    autoComplete="text"
+                />
+
+                <TextField
+                    label="Store currency"
+                    value={data?.getStore.currency}
+                    type="text"
+                    autoComplete="text"
+                />
+
+                <TextField
+                    label="Store address1"
+                    value={data?.getStore.address1}
+                    type="text"
+                    autoComplete="text"
+                />
+
+                <TextField
+                    label="Store address2"
+                    value={data?.getStore.address2}
+                    type="text"
+                    autoComplete="text"
+                />
+
+                <TextField
+                    label="Store phone"
+                    value={data?.getStore.phone}
+                    type="text"
+                    autoComplete="text"
+                />
+
+                <TextField
+                    label="Store created at"
+                    value={data?.getStore.created_at}
+                    type="text"
+                    autoComplete="text"
+                />
+            </>
+        )
+    } else {
+        StoreInformation = <p style={{ textAlign: 'center' }}><Spinner /></p>
+    }
+
     return (
         <Page title="Admin Store Detail">
+            {
+                error ? <p>{error.message}</p> : null
+            }
             <Layout>
                 <Layout.Section>
                     <VerticalStack gap="5">
@@ -32,124 +163,7 @@ export default function AdminStoreDetail() {
                                 <Text as={"h2"} variant="headingLg">
                                     Store Information
                                 </Text>
-                                <TextField
-                                    label="Store id"
-                                    value={store.id}
-                                    type="text"
-                                    autoComplete="text"
-                                />
-
-                                <TextField
-                                    label="Store name"
-                                    value={store.name}
-                                    type="text"
-                                    autoComplete="text"
-                                />
-
-                                <TextField
-                                    label="Store email"
-                                    value={store.email}
-                                    type="email"
-                                    autoComplete="email"
-                                />
-
-                                <TextField
-                                    label="Store domain"
-                                    value={store.domain}
-                                    type="text"
-                                    autoComplete="text"
-                                />
-
-                                <TextField
-                                    label="Store scope"
-                                    value={store.domain}
-                                    type="text"
-                                    autoComplete="text"
-                                />
-
-                                <TextField
-                                    label="Store country"
-                                    value={store.domain}
-                                    type="text"
-                                    autoComplete="text"
-                                />
-
-                                <TextField
-                                    label="Store customer email"
-                                    value={store.domain}
-                                    type="text"
-                                    autoComplete="text"
-                                />
-
-                                <TextField
-                                    label="Shopify domain"
-                                    value={store.myshopify_domain}
-                                    type="text"
-                                    autoComplete="text"
-                                />
-
-                                <TextField
-                                    label="App plan name"
-                                    value={store.plan_name}
-                                    type="text"
-                                    autoComplete="text"
-                                />
-
-                                <TextField
-                                    label="App plan display name"
-                                    value={store.plan_display_name}
-                                    type="text"
-                                    autoComplete="text"
-                                />
-
-                                <TextField
-                                    label="Store owner"
-                                    value={store.shop_owner}
-                                    type="text"
-                                    autoComplete="text"
-                                />
-
-                                <TextField
-                                    label="Store iana timezone"
-                                    value={store.iana_timezone}
-                                    type="text"
-                                    autoComplete="text"
-                                />
-
-                                <TextField
-                                    label="Store currency"
-                                    value={store.currency}
-                                    type="text"
-                                    autoComplete="text"
-                                />
-
-                                <TextField
-                                    label="Store address1"
-                                    value={store.address1}
-                                    type="text"
-                                    autoComplete="text"
-                                />
-
-                                <TextField
-                                    label="Store address2"
-                                    value={store.address2}
-                                    type="text"
-                                    autoComplete="text"
-                                />
-
-                                <TextField
-                                    label="Store phone"
-                                    value={store.phone}
-                                    type="text"
-                                    autoComplete="text"
-                                />
-
-                                <TextField
-                                    label="Store created at"
-                                    value={store.created_at}
-                                    type="text"
-                                    autoComplete="text"
-                                />
+                                {StoreInformation}
                             </VerticalStack>
                         </Card>
                     </VerticalStack>
@@ -198,12 +212,19 @@ export default function AdminStoreDetail() {
                                 <Bleed marginInline="20">
                                     <Divider />
                                 </Bleed>
-                                <TextField
-                                    label="Store access token"
-                                    value={store.accessToken}
-                                    type="password"
-                                    autoComplete="text"
-                                />
+                                {
+                                    data?.getStore ? (
+                                        <TextField
+                                            label="Store access token"
+                                            value={data?.getStore.accessToken}
+                                            type="password"
+                                            autoComplete="text"
+                                        />
+                                    ) : (
+                                        <p style={{ textAlign: 'center' }}><Spinner /></p>
+                                    )
+                                }
+                                
                             </VerticalStack>
                         </Card>
                     </VerticalStack>
@@ -213,18 +234,10 @@ export default function AdminStoreDetail() {
                         secondaryActions={[
                             {
                                 content: "Delete",
-                                // loading: isDeleting,
-                                // disabled: !QRCode.id || !QRCode || isSaving || isDeleting,
-                                // destructive: true,
-                                // outline: true,
-                                // onAction: () => submit({}, { method: "delete" })
                             },
                         ]}
                         primaryAction={{
                             content: "Save",
-                            // loading: isSaving,
-                            // disabled: !isDirty || isSaving || isDeleting,
-                            // onAction: handleSave,
                         }}
                     />
                 </Layout.Section>

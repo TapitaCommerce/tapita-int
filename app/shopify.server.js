@@ -9,7 +9,7 @@ import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prism
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-07";
 import mongoose from "mongoose";
 import prisma from "./db.server";
-import adminModel from "./models/admin.model";
+import GraphQLServer from "./graphql/graphql.server";
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -42,6 +42,7 @@ mongoose.set('debug', true);
 mongoose.set('debug', { color: true });
 mongoose.connect(dbConnectionString).then(result => {
   console.log('Connect to mongodb successfully');
+  GraphQLServer();
 }).catch(err => {
   console.log('Error occured when connect to mongodb: ', err.message);
 })

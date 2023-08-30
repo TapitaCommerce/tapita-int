@@ -1,94 +1,98 @@
 import { json, redirect } from "@remix-run/node";
 import { useActionData, useLoaderData, useNavigate, useSubmit } from "@remix-run/react";
 import { SearchMinor, MetafieldsMinor, DiscountsFilledMinor, MagicMinor, StoreDetailsMinor } from '@shopify/polaris-icons';
-import { ActionList, Button, Card, Form, FormLayout, IndexTable, Layout, LegacyCard, Page, Popover, Text, TextField, VerticalStack } from "@shopify/polaris";
+import { ActionList, Button, Card, Form, FormLayout, IndexTable, Layout, LegacyCard, Page, Popover, Spinner, Text, TextField, VerticalStack } from "@shopify/polaris";
 import indexStyles from "./_index/style.css";
-import { useState } from "react";
-import StoreServer from "~/server/store.server";
-import AuthServer, { logout, requireUserId } from "~/server/auth.server";
+import { useEffect, useState } from "react";
 import AdminServer from "~/server/admin.server";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { GET_ADMIN } from "~/graphql/query";
+import { UPDATE_ADMIN } from "~/graphql/mutation";
 
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
 export async function loader({ request, params }) {
-    await requireUserId(request, '/');
-    let admin = null;
-    
-    if(params.id !== 'new') {
-        admin = await AdminServer.getAdmin({ filter: {
-            _id: params.id
-        } });
-    }
-    console.log("NGUYEN HONG SON admin: ", admin);
-    return json({ admin });
-}
-
-export async function action({ request, params }) {
-    if(request.method === "POST") {
-        const data = {
-            ...Object.fromEntries(await request.formData()),
-        };
-
-        // HANDLE LOGOUT
-        if(data._action === 'logout') {
-            return logout(request);
-        }
-        // FINISH HANDLE LOGOUT
-
-
-        // HANDLE CREATE OR UPDATE ADMIN
-        const { id } = params;
-        if(id === "new") {
-            const newAdmin = await AuthServer.signup(data);
-            if(newAdmin.error) {
-                return {
-                    error: newAdmin.error
-                }
-            }
-            return redirect('/admin/management');
-        } else {
-            const updatedAdmin = await AdminServer.updateAdmin({ id, payload: data });
-            if(updatedAdmin && updatedAdmin.error) {
-                return {
-                    error: updatedAdmin.error
-                }
-            }   
-            return redirect('/admin/management');
-        }
-    }
-    return null;
+    return json({ id: params.id });
 }
 
 export default function Admin() {
     const submit = useSubmit();
-    const { admin } = useLoaderData();
-    const error = useActionData()?.error || {};
+    const [admin, setAdmin] = useState(null);
+    const navigate = useNavigate();
+    const { id } = useLoaderData();
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    // const error = useActionData()?.error || {};
 
-    const [formState, setFormState] = useState(admin ? admin : {
+    const { loading: getAdminLoading, error: getAdminError, data: getAdminData } = useQuery(GET_ADMIN, {
+        variables: {
+            input: {
+                id: id
+            }
+        }
+    }); 
+
+    const [updateAdmin, { loading: updatedAdminLoading, error: updatedAdminError, data: updatedAdminData }] = useMutation(UPDATE_ADMIN);
+
+    const [formState, setFormState] = useState(getAdminData?.getAdmin ? getAdminData?.getAdmin : {
         username: '',
         email: '',
-        password: '',
-        confirmedPassword: ''
     }); // The state is copied from useLoaderData into React state
-    const [cleanFormState, setCleanFormState] = useState(admin ? admin : {
+    const [cleanFormState, setCleanFormState] = useState(getAdminData?.getAdmin ? getAdminData?.getAdmin : {
         username: '',
         email: '',
-        password: '',
-        confirmedPassword: ''
     });   // Initial state of form
 
     const isDirty = JSON.stringify(formState) !== JSON.stringify(cleanFormState);   // check if the form has changed
 
     const handleSave = async () => {
-        const data = {
-            username: formState.username,
-            email: formState.email,
-            password: formState?.password || "",
-            confirmedPassword: formState?.confirmedPassword || "",
+        try {
+            setIsLoading(true);
+            const response = await updateAdmin({ variables: {
+                input: {
+                    id: id,
+                    username: formState?.username,
+                    email: formState?.email
+                }
+            } });
+            setIsLoading(false);
+            navigate('/admin/management');
+        } catch (err) {
+            setError(err);
+            setIsLoading(false);
         }
+    }
 
-        setCleanFormState({ ...formState });
-        submit(data, { method: "POST" });
+    useEffect(() => {
+        setFormState(getAdminData?.getAdmin);
+        setCleanFormState(getAdminData?.getAdmin);
+    }, [getAdminData]); 
+
+    let AdminInformation;
+
+    if(getAdminData?.getAdmin) {
+        console.log('NGUYEN HONG SON form state', formState);
+        AdminInformation = (
+            <>
+                <TextField
+                    label="Username"
+                    value={formState?.username ?? ''}
+                    type="text"
+                    onChange={(username) => setFormState({ ...formState, username })}
+                    autoComplete="text"
+                />
+
+                <TextField
+                    label="Email"
+                    value={formState?.email ?? ''}
+                    onChange={(email) => setFormState({ ...formState, email })}
+                    type="text"
+                    autoComplete="text"
+                />
+            </>
+        )
+    } else {
+        AdminInformation = <p style={{ textAlign: 'center' }}><Spinner /></p>
     }
 
     return (
@@ -100,57 +104,24 @@ export default function Admin() {
                     disabled = {isDirty ? false : true}
                     primary
                     onClick={handleSave}
+                    loading={isLoading}
                 >
                   Save
                 </Button>
             }
-        >
+        >   
+            {
+                error ? (<p>{error.message}</p>) : null
+            }
             <Layout>
                 <Layout.Section>
                     <VerticalStack gap="5">
                         <Card>
                             {
-                                typeof error === "string" ? (
-                                    <p style={{textAlign: 'center', color: 'red'}}>{error}</p>
-                                ) : null
+                                getAdminError ? <p>{getAdminError.message}</p> : null
                             }
                             <VerticalStack gap="5">
-                                <TextField
-                                    label="Username"
-                                    value={formState?.username ?? ''}
-                                    type="text"
-                                    onChange={(username) => setFormState({ ...formState, username })}
-                                    autoComplete="text"
-                                />
-
-                                <TextField
-                                    label="Email"
-                                    value={formState?.email ?? ''}
-                                    onChange={(email) => setFormState({ ...formState, email })}
-                                    type="text"
-                                    autoComplete="text"
-                                />
-
-                                {
-                                    !admin && (
-                                        <>
-                                            <TextField
-                                                label="Password"
-                                                value={formState?.password ?? ''}
-                                                type="password"
-                                                onChange={(password) => setFormState({ ...formState, password })}
-                                                autoComplete="password"
-                                            />
-                                            <TextField
-                                                label="Confirm password"
-                                                value={formState?.confirmedPassword ?? ''}
-                                                type="password"
-                                                onChange={(confirmedPassword) => setFormState({ ...formState, confirmedPassword })}
-                                                autoComplete="password"
-                                            />
-                                        </>
-                                    )
-                                }
+                                {AdminInformation}
                             </VerticalStack>
                         </Card>
                     </VerticalStack>

@@ -1,7 +1,5 @@
 import { json, redirect } from "@remix-run/node";
-import { Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react";
-
-import { login } from "../../shopify.server";
+import { Form, useActionData, useLoaderData, useNavigate, useSubmit } from "@remix-run/react";
 
 import indexStyles from "./style.css";
 import {
@@ -10,11 +8,15 @@ import {
   Page, 
   FormLayout,
   TextField,
-  Card
+  Card,
+  Spinner
 } from "@shopify/polaris";
 import CustomPolarisAppProvider from "~/components/CustomPolarisAppProvider";
 import { useState } from "react";
 import AuthServer, { getUser } from "~/server/auth.server";
+import { helloWorld, login } from "~/graphql/client";
+import { useMutation } from "@apollo/client";
+import { LOGIN_MUTATION } from "~/graphql/mutation";
 
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
@@ -23,39 +25,39 @@ export async function loader({ request }) {
   if (url.searchParams.get("shop")) {
     throw redirect(`/app?${url.searchParams.toString()}`);
   }
-
-  const user = await getUser(request);
-  if(user) {
-    return redirect('/admin');
-  }
   
   return null;
 }
 
-export async function action({ request }) {
-  if(request.method === "POST") {
-    const data = {
-      ...Object.fromEntries(await request.formData()),
-    };
-    return await AuthServer.login({ username: data.username, password: data.password });
-  }
-
-  return null;
-}
-
 export default function App() {
-  const error = useActionData()?.error || {};
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const submit = useSubmit();
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogin = () => {
-    submit({
-      username: username,
-      password: password,
-    }, {
-      method: "POST"
-    });
+  const [login] = useMutation(LOGIN_MUTATION);
+
+  const handleLogin = async () => {
+    try {
+      setIsLoading(true);
+      const response = await login({ variables: {
+        input: {
+          username,
+          password,
+        }
+      } });
+      setIsLoading(false);
+      if(response.data.login) {
+        localStorage.setItem('accessToken', response.data.login);
+        navigate('/admin');
+      } else {
+        throw new Error('Some error occured');
+      }
+    } catch (err) {
+      setError(err);
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -64,9 +66,14 @@ export default function App() {
         <Page>
           <Card>
             {
-              typeof error === "string" ? (
-                <p style={{textAlign: 'center', color: 'red'}}>{error}</p>
+              error ? (
+                <p style={{textAlign: 'center', color: 'red'}}>{error.message}</p>
               ) : null
+            }
+            {
+              isLoading ? (<p style={{textAlign: 'center', color: 'red'}}>
+                <Spinner />
+              </p>) : null
             }
             <FormLayout>
               <TextField label="Username" value={username} onChange={(e) => setUsername(e)} autoComplete="off" />

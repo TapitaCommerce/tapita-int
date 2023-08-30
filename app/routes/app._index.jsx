@@ -26,7 +26,6 @@ import {
 
 import { authenticate } from "../shopify.server";
 import StoreModel from "~/models/store.model";
-import { shopInformation } from "~/constants/queryString";
 import axios from "axios";
 
 export const loader = async ({ request }) => {
