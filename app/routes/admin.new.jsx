@@ -1,24 +1,13 @@
-import { json, redirect } from "@remix-run/node";
-import { useActionData, useLoaderData, useNavigate, useSubmit } from "@remix-run/react";
-import { SearchMinor, MetafieldsMinor, DiscountsFilledMinor, MagicMinor, StoreDetailsMinor } from '@shopify/polaris-icons';
-import { ActionList, Button, Card, Form, FormLayout, IndexTable, Layout, LegacyCard, Page, Popover, Text, TextField, VerticalStack } from "@shopify/polaris";
+import { useNavigate, useSubmit } from "@remix-run/react";
+import { Button, Card, Layout, Page, TextField, VerticalStack } from "@shopify/polaris";
 import indexStyles from "./_index/style.css";
-import { useEffect, useState } from "react";
-import StoreServer from "~/server/store.server";
-import AuthServer, { logout, requireUserId } from "~/server/auth.server";
-import AdminServer from "~/server/admin.server";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useState } from "react";
+import { useMutation } from "@apollo/client";
 import { CREATE_ADMIN } from "~/graphql/mutation";
 
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
-export async function loader({ request, params }) {
-    return null;
-}
-
 export default function Admin() {
-    const submit = useSubmit();
-    const [admin, setAdmin] = useState(null);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     

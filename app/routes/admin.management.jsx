@@ -1,10 +1,7 @@
-import { useLoaderData, useNavigate, useSubmit } from "@remix-run/react";
+import { useNavigate, useSubmit } from "@remix-run/react";
 import { ActionList, Button, IndexTable, LegacyCard, LegacyStack, Modal, Page, Popover, Spinner, Text, TextContainer } from "@shopify/polaris";
 import { StoreDetailsMinor, DeleteMinor } from "@shopify/polaris-icons";
-import { logout, requireUserId } from "~/server/auth.server";
 import indexStyles from "./_index/style.css";
-import AdminServer from "~/server/admin.server";
-import { json, redirect } from "@remix-run/node";
 import { useCallback, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { GET_ALL_ADMINS } from "~/graphql/query";
@@ -13,7 +10,6 @@ import { DELETE_ADMIN } from "~/graphql/mutation";
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
 export default function AdminManagement() {
-    const submit = useSubmit();
     const [selectedAdminId, setSelectedAdminId] = useState(null);
     const [modalActive, setModalActive] = useState(false);
     const navigate = useNavigate();

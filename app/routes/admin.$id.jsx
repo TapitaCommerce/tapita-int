@@ -1,11 +1,9 @@
-import { json, redirect } from "@remix-run/node";
-import { useActionData, useLoaderData, useNavigate, useSubmit } from "@remix-run/react";
-import { SearchMinor, MetafieldsMinor, DiscountsFilledMinor, MagicMinor, StoreDetailsMinor } from '@shopify/polaris-icons';
-import { ActionList, Button, Card, Form, FormLayout, IndexTable, Layout, LegacyCard, Page, Popover, Spinner, Text, TextField, VerticalStack } from "@shopify/polaris";
+import { json } from "@remix-run/node";
+import { useLoaderData, useNavigate } from "@remix-run/react";
+import { Button, Card, Layout, Page, Spinner, TextField, VerticalStack } from "@shopify/polaris";
 import indexStyles from "./_index/style.css";
 import { useEffect, useState } from "react";
-import AdminServer from "~/server/admin.server";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { GET_ADMIN } from "~/graphql/query";
 import { UPDATE_ADMIN } from "~/graphql/mutation";
 
@@ -16,13 +14,10 @@ export async function loader({ request, params }) {
 }
 
 export default function Admin() {
-    const submit = useSubmit();
-    const [admin, setAdmin] = useState(null);
     const navigate = useNavigate();
     const { id } = useLoaderData();
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    // const error = useActionData()?.error || {};
 
     const { loading: getAdminLoading, error: getAdminError, data: getAdminData } = useQuery(GET_ADMIN, {
         variables: {
@@ -97,7 +92,7 @@ export default function Admin() {
     return (
         <Page
             backAction={{content: 'Settings', url: '/admin/management'}} 
-            title={admin ? "Update admin information" : "Create new admin"}
+            title={"Update admin information"}
             primaryAction={
                 <Button
                     disabled = {isDirty ? false : true}

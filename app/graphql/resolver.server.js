@@ -18,49 +18,38 @@ export const verifyToken = async (bearerToken) => {
     }
 }
 
+export const getUserFromToken = async (bearerToken) => {
+    const token = bearerToken.split(' ')[1];
+    if(!token) {
+        return null;
+    }
+    const decoded = await jwt.verify(token, process.env.SECRET_KEY);
+    console.log('DECODED: ', decoded);
+    if(!decoded) {
+        return null;
+    }
+    return decoded;
+}
+
 export const resolver = {
     hello: () => {
         return "Hello World";
     },
     getAllStores: async (args, request) => {
-        const bearerToken = request.headers.authorization;
-        const isAuthenticated = await verifyToken(bearerToken);
-        if(isAuthenticated) {
-            const stores = await StoreModel.find({});
-            return stores;
-        } else {
-            throw new Error('Authentication Error');
-        }
+        const stores = await StoreModel.find({});
+        return stores;
     },
     getAllAdmins: async (args, request) => {
-        const bearerToken = request.headers.authorization;
-        const isAuthenticated = await verifyToken(bearerToken);
-        if(isAuthenticated) {
-            const admins = await AdminModel.find({});
-            return admins;
-        } else {
-            throw new Error('Authentication Error');
-        }
+        const admins = await AdminModel.find({});
+        return admins;
     },
     getStore: async ({ input }, request) => {
-        const bearerToken = request.headers.authorization;
-        const isAuthenticated = await verifyToken(bearerToken);
-        if(isAuthenticated) {
-            const store = await StoreModel.findOne({ id: input.id });
-            return store;
-        } else {
-            throw new Error('Authentication Error');
-        }
+        const store = await StoreModel.findOne({ id: input.id });
+        return store;
     },
     getAdmin: async ({ input }, request) => {
-        const bearerToken = request.headers.authorization;
-        const isAuthenticated = await verifyToken(bearerToken);
-        if(isAuthenticated) {
-            const admin = await AdminModel.findOne({ _id: input.id });
-            return admin;
-        } else {
-            throw new Error('Authentication Error');
-        }
+        const admin = await AdminModel.findOne({ _id: input.id });
+        return admin;
     },
     login: async ({ input }, request) => {
         const { username, password } = input;
@@ -87,47 +76,29 @@ export const resolver = {
         return accessToken;
     },
     updateAdmin: async ({ input }, request) => {
-        const bearerToken = request.headers.authorization;
-        const isAuthenticated = await verifyToken(bearerToken);
-        if(isAuthenticated) {
-            const updatedAdmin = await AdminModel.findByIdAndUpdate(new mongoose.Types.ObjectId(input.id), {
-              username: input.username,
-              email: input.email
-            });
-            return updatedAdmin;
-        } else {
-            throw new Error('Authentication Error');
-        }
+        const updatedAdmin = await AdminModel.findByIdAndUpdate(new mongoose.Types.ObjectId(input.id), {
+            username: input.username,
+            email: input.email
+        });
+        return updatedAdmin;
     },
     createAdmin: async ({ input }, request) => {
-        const bearerToken = request.headers.authorization;
-        const isAuthenticated = await verifyToken(bearerToken);
-        if(isAuthenticated) {
-            const { username, password, confirmedPassword, email } = input;
-            if(password !== confirmedPassword) {
-                throw new Error('Password and confirmed password must be matched');
-            }
-
-            const existed = await AdminModel.findOne({ username: username });
-            if(existed) {
-                throw new Error('Username has already been registed');
-            }
-            const hashedPassword = await bcrypt.hash(password, 10);
-
-            const newAdmin = await AdminModel.create({ username, password: hashedPassword, email });
-            return newAdmin;
-        } else {
-            throw new Error('Authentication Error');
+        const { username, password, confirmedPassword, email } = input;
+        if(password !== confirmedPassword) {
+            throw new Error('Password and confirmed password must be matched');
         }
+
+        const existed = await AdminModel.findOne({ username: username });
+        if(existed) {
+            throw new Error('Username has already been registed');
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newAdmin = await AdminModel.create({ username, password: hashedPassword, email });
+        return newAdmin;
     },
     deleteAdmin: async ({ input }, request) => {
-        const bearerToken = request.headers.authorization;
-        const isAuthenticated = await verifyToken(bearerToken);
-        if(isAuthenticated) {
-            const deletedAdmin = await AdminModel.findByIdAndDelete(new mongoose.Types.ObjectId(input.id));
-            return deletedAdmin;
-        } else {
-            throw new Error('Authentication Error');
-        }
+        const deletedAdmin = await AdminModel.findByIdAndDelete(new mongoose.Types.ObjectId(input.id));
+        return deletedAdmin;
     }
 }

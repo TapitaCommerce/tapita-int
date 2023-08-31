@@ -3,23 +3,10 @@ import { SearchMinor, MetafieldsMinor, DiscountsFilledMinor, MagicMinor, StoreDe
 import { ActionList, Button, IndexTable, LegacyCard, Page, Popover, Spinner, Text } from "@shopify/polaris";
 import indexStyles from "./_index/style.css";
 import { useState } from "react";
-import { logout, requireUserId } from "~/server/auth.server";
 import { useQuery } from "@apollo/client";
 import { GET_ALL_STORES } from "~/graphql/query";
 
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
-
-export async function action({ request }) {
-    if(request.method === "POST") {
-        const data = {
-            ...Object.fromEntries(await request.formData()),
-        };
-        if(data._action === 'logout') {
-            return logout(request);
-        }
-    }
-    return null;
-}
 
 export default function Admin() {
     const navigate = useNavigate();

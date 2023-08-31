@@ -1,9 +1,7 @@
-import { redirect } from "@remix-run/node";
-import { useNavigate, useSubmit } from "@remix-run/react";
-import { ActionList, Avatar, Frame, Icon, Text, TopBar } from "@shopify/polaris";
+import { useNavigate } from "@remix-run/react";
+import { ActionList, Frame, Icon, Text, TopBar } from "@shopify/polaris";
 import { AnalyticsBarHorizontalMinor, QuestionMarkMajor, ArrowRightMinor } from "@shopify/polaris-icons";
 import { useCallback, useState } from "react";
-import { logout } from "~/server/auth.server";
 
 export default function DefaultLayout({ children, handleLogout }) {
     const navigate = useNavigate();
