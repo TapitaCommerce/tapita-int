@@ -8,6 +8,8 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import { LS_ADMIN_AT, LS_MERCHANT_AT } from "./constants/string.constant";
+import { ADMIN_ACCESS_TOKEN, MERCHANT_ACCESS_TOKEN } from "./constants/header.constant";
 
 export default function App() {
   const httpLink = createHttpLink({
@@ -17,12 +19,14 @@ export default function App() {
   
   const authLink = setContext((_, { headers }) => {
     // get the authentication token from local storage if it exists
-    const token = localStorage.getItem('accessToken');
+    const adminToken = localStorage.getItem(LS_ADMIN_AT);
+    const merchantToken = localStorage.getItem(LS_MERCHANT_AT);
     // return the headers to the context so httpLink can read them
     return {
       headers: {
         ...headers,
-        authorization: token ? `Bearer ${token}` : "",
+        [ADMIN_ACCESS_TOKEN]: adminToken ? adminToken : "",
+        [MERCHANT_ACCESS_TOKEN]: merchantToken ? merchantToken : "",
       }
     }
   });
@@ -38,7 +42,6 @@ export default function App() {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <link rel="stylesheet" href="https://unpkg.com/@shopify/polaris@11.1.2/build/esm/styles.css" onload='this.media="all"'></link>
-        {/* <link rel="stylesheet" href="./routes/_index/style.css" onload='this.media="all"'></link> */}
         <Meta />
         <Links />
       </head>

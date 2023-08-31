@@ -7,7 +7,9 @@ const isAdminAuthenticated = rule()(async (parent, args, ctx) => {
 });
 
 const isMerchantAuthenticated = rule()(async (parent, args, ctx) => {
-    return true;
+    const context = await ctx();
+    const merchantAccessToken = context.merchantAccessToken;
+    return merchantAccessToken != null;
 })
 
 export const permissions = shield({

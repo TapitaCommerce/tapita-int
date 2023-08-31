@@ -2,6 +2,7 @@ import { Outlet, useNavigate } from "@remix-run/react";
 import CustomPolarisAppProvider from "~/components/CustomPolarisAppProvider";
 import indexStyles from "./_index/style.css";
 import DefaultLayout from "~/components/layout/DefaultLayout";
+import { LS_ADMIN_AT, LS_MERCHANT_AT } from "~/constants/string.constant";
 
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
@@ -9,7 +10,8 @@ export default function Admin() {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem('accessToken');
+        localStorage.removeItem(LS_ADMIN_AT);
+        localStorage.removeItem(LS_MERCHANT_AT);
         navigate('/');
     }
 

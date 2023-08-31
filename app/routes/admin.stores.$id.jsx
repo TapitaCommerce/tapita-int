@@ -4,6 +4,7 @@ import { Bleed, Button, Card, Divider, HorizontalStack, Layout, Page, PageAction
 import indexStyles from "./_index/style.css";
 import { useQuery } from "@apollo/client";
 import { GET_STORE } from "~/graphql/query";
+import { LS_MERCHANT_AT } from "~/constants/string.constant";
 
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
@@ -24,6 +25,7 @@ export default function AdminStoreDetail() {
     let StoreInformation;
 
     if(data?.getStore) {
+        localStorage.setItem(LS_MERCHANT_AT, data?.getStore.accessToken);
         StoreInformation = (
             <>
                 <TextField

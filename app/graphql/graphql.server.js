@@ -5,6 +5,7 @@ import { schema } from "./schema.server";
 import { getUserFromToken, resolver } from "./resolver.server";
 import { applyMiddleware } from "graphql-middleware";
 import { permissions } from "./permissions.server";
+import { ADMIN_ACCESS_TOKEN, MERCHANT_ACCESS_TOKEN } from "~/constants/header.constant";
 
 export default function GraphQLServer() {
     const app = express();
@@ -16,10 +17,12 @@ export default function GraphQLServer() {
     app.use('/graphql', graphqlHTTP((req) => ({
         schema: schemaWithMiddlewares,
         context: async () => {
-            const authorizationHeader = req.headers.authorization || '';
+            const adminAuthorizationHeader = req.headers[ADMIN_ACCESS_TOKEN] || '';
+            const merchantAuthorizationHeader = req.headers[MERCHANT_ACCESS_TOKEN] || null;
             // const token = authorizationHeader.split(' ')[1];
-            const user = await getUserFromToken(authorizationHeader);
-            return { user };
+            const user = await getUserFromToken(adminAuthorizationHeader);
+            
+            return { user, merchantAccessToken: merchantAuthorizationHeader };
         },
         rootValue: resolver,
         graphiql: true,

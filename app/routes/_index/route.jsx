@@ -14,6 +14,7 @@ import CustomPolarisAppProvider from "~/components/CustomPolarisAppProvider";
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { LOGIN_MUTATION } from "~/graphql/mutation";
+import { LS_ADMIN_AT } from "~/constants/string.constant";
 
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
@@ -46,7 +47,7 @@ export default function App() {
       } });
       setIsLoading(false);
       if(response.data.login) {
-        localStorage.setItem('accessToken', response.data.login);
+        localStorage.setItem(LS_ADMIN_AT, response.data.login);
         navigate('/admin');
       } else {
         throw new Error('Some error occured');

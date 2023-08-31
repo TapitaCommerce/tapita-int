@@ -18,9 +18,8 @@ export const verifyToken = async (bearerToken) => {
     }
 }
 
-export const getUserFromToken = async (bearerToken) => {
-    const token = bearerToken.split(' ')[1];
-    if(!token) {
+export const getUserFromToken = async (token) => {
+    if(!token || token == '') {
         return null;
     }
     const decoded = await jwt.verify(token, process.env.SECRET_KEY);
