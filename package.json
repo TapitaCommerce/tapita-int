@@ -29,7 +29,7 @@
     "@shopify/polaris": "^11.1.2",
     "@shopify/shopify-app-remix": "^1.0.3",
     "@shopify/shopify-app-session-storage-prisma": "^1.0.0",
-    "axios": "^1.4.0",
+    "axios": "^1.5.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",

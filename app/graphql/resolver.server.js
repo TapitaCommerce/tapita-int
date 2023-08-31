@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import StoreModel from "~/models/store.model";
 import mongoose from "mongoose";
+import axios from "axios";
+import { SHOPIFY_ACCESS_TOKEN } from "~/constants/header.constant";
 
 export const verifyToken = async (bearerToken) => {
     if(!bearerToken) {
@@ -99,5 +101,28 @@ export const resolver = {
     deleteAdmin: async ({ input }, request) => {
         const deletedAdmin = await AdminModel.findByIdAndDelete(new mongoose.Types.ObjectId(input.id));
         return deletedAdmin;
+    },
+    getProductsByStore: async ({ input }, ctx) => {
+        const context = await ctx();
+        const merchantAccessToken = context.merchantAccessToken;
+        if(merchantAccessToken) {
+            const store = await StoreModel.findOne({
+                accessToken: merchantAccessToken,
+            });
+
+            if(!store) {
+                throw new Error('Fail to authenticate to merchant store. Store not found'); 
+            }
+
+            const response = await axios.get(`https://${store.domain}/admin/api/2023-07/products.json`, { 
+                headers: {
+                    [SHOPIFY_ACCESS_TOKEN]: store.accessToken,
+                }
+            });
+            return response.data.products;
+        } else {
+            throw new Error('Fail to authenticate to merchant store');
+        }
+        
     }
 }

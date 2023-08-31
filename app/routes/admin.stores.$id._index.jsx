@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 import { Bleed, Button, Card, Divider, HorizontalStack, Layout, Page, PageActions, Spinner, Text, TextField, VerticalStack } from "@shopify/polaris";
 import indexStyles from "./_index/style.css";
 import { useQuery } from "@apollo/client";
@@ -14,6 +14,7 @@ export async function loader({ request, params }) {
 
 export default function AdminStoreDetail() {
     const { id } = useLoaderData();
+    const navigate = useNavigate();
     const { loading, error, data } = useQuery(GET_STORE, {
         variables: {
             input: {
@@ -184,8 +185,9 @@ export default function AdminStoreDetail() {
                                 </Bleed>
                                 <Button
                                     primary
+                                    onClick={() => navigate(`/admin/stores/${id}/products`)}
                                 >
-                                    Search
+                                    Shop Products
                                 </Button>
                                 <Button
                                     primary

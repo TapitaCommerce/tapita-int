@@ -8,6 +8,11 @@ export const schema = buildSchema(`
     input GetStoreInput {
         id: String
     }
+
+    input GetProductsByStoreInput {
+        shopDomain: String
+        merchantAccessToken: String
+    }
     
     input GetAdminInput {
         id: String
@@ -58,12 +63,20 @@ export const schema = buildSchema(`
         email: String
     }
     
+    type Product {
+        id: String
+        title: String
+        body_html: String
+        updated_at: String
+    }
+
     type Query {
         hello: String
         getAllStores: [Store]
         getStore(input: GetStoreInput): Store
         getAllAdmins: [Admin]
         getAdmin(input: GetAdminInput): Admin
+        getProductsByStore: [Product]
     }
       
     type Mutation {

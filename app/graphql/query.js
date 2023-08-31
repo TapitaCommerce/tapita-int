@@ -67,3 +67,14 @@ export const GET_ADMIN = gql`
         }
     }
 `;
+
+export const GET_PRODUCTS_BY_STORE = gql`
+  query GetProductsByStore {
+    getProductsByStore {
+      id
+      title
+      body_html
+      updated_at
+    }
+  }
+`

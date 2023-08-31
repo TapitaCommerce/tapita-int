@@ -18,6 +18,7 @@ export const permissions = shield({
         getStore: isAdminAuthenticated,
         getAllAdmins: isAdminAuthenticated,
         getAdmin: isAdminAuthenticated,
+        getProductsByStore: isMerchantAuthenticated,
     },
     Mutation: {
         createAdmin: isAdminAuthenticated,
