@@ -2,7 +2,7 @@
 
 name = "efficient-shipping-app"
 client_id = "65ed361e1b30cad533121d30ca794626"
-application_url = "https://focuses-uncertainty-what-hard.trycloudflare.com"
+application_url = "https://agreements-kerry-robert-judge.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products,read_files,write_files"
 
 [auth]
 redirect_urls = [
-  "https://focuses-uncertainty-what-hard.trycloudflare.com/auth/callback",
-  "https://focuses-uncertainty-what-hard.trycloudflare.com/auth/shopify/callback",
-  "https://focuses-uncertainty-what-hard.trycloudflare.com/api/auth/callback"
+  "https://agreements-kerry-robert-judge.trycloudflare.com/auth/callback",
+  "https://agreements-kerry-robert-judge.trycloudflare.com/auth/shopify/callback",
+  "https://agreements-kerry-robert-judge.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
