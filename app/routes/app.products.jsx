@@ -28,12 +28,10 @@ export async function loader({ request }) {
     `https://${session.shop}/admin/api/2023-07/products.json`,
     config
   );
-  // console.log(productsResponse.data.products);
   const productList = productsResponse.data.products.map((product) => ({
     id: product.id,
     title: product.title,
-    description: product.body_html,
-    // Image: product.image.src,
+    description: product.body_html || "",
     date: product.published_at,
   }));
   return json({ productList: productList });
@@ -47,8 +45,6 @@ export async function action({ request }) {
     ...Object.fromEntries(await request.formData()),
     shop,
   };
-  const navigate = useNavigate();
-
   const errors = validatePage(data);
 
   if (errors) {
@@ -70,28 +66,25 @@ export default function ProductForm() {
   const { selectedResources, allResourcesSelected, handleSelectionChange } =
     useIndexResourceState(productList);
   const rowMarkup = productList.map(
-    ({ id, date, title, description, Image }, index) => (
-      <IndexTable.Row
-        id={id}
-        key={id}
-        selected={selectedResources.includes(id)}
-        position={index}
-      >
-        <IndexTable.Cell>
-          <Text variant="bodyMd" fontWeight="bold" as="span">
-            {id}
-          </Text>
-        </IndexTable.Cell>
-        <IndexTable.Cell>{title}</IndexTable.Cell>
-        <IndexTable.Cell>{description}</IndexTable.Cell>
-        <IndexTable.Cell>{date}</IndexTable.Cell>
-        <IndexTable.Cell>
-          <Button primary onClick={() => navigate(`/app/productss/${id}`)}>
-            Edit
-          </Button>
-        </IndexTable.Cell>
-      </IndexTable.Row>
-    )
+    ({ id, date, title, description }, index) => {
+      return (
+        <IndexTable.Row id={id} key={id} position={index}>
+          <IndexTable.Cell>
+            <Text variant="bodyMd" fontWeight="bold" as="span">
+              {id}
+            </Text>
+          </IndexTable.Cell>
+          <IndexTable.Cell>{truncate(title)}</IndexTable.Cell>
+          <IndexTable.Cell>{truncate(description)}</IndexTable.Cell>
+          <IndexTable.Cell>{date}</IndexTable.Cell>
+          <IndexTable.Cell>
+            <Button primary onClick={() => navigate(`/app/productss/${id}`)}>
+              Edit
+            </Button>
+          </IndexTable.Cell>
+        </IndexTable.Row>
+      );
+    }
   );
 
   return (
@@ -101,10 +94,6 @@ export default function ProductForm() {
         <IndexTable
           resourceName={resourceName}
           itemCount={productList.length}
-          selectedItemsCount={
-            allResourcesSelected ? "All" : selectedResources.length
-          }
-          onSelectionChange={handleSelectionChange}
           headings={[
             { title: "Id" },
             { title: "Title" },

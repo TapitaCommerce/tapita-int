@@ -18,6 +18,7 @@ import {
 } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import { authenticate } from "~/shopify.server";
+import OpenAI from "openai";
 
 export async function loader({ request, params }) {
   console.log(params.id);
@@ -68,7 +69,6 @@ export async function action({ request }) {
 
     console.log(formData);
 
-    // return redirect(`/app/pagess/${formData.id}`);
     return redirect(`/app/pages`);
   }
   return null;
@@ -85,6 +85,7 @@ export default function PageChange() {
   const [textDescriptionValue, setTextFieldValue] = useState(
     pageEdit.description || ""
   );
+  const [textSuggestContent, setTextFieldValue2] = useState("");
 
   const handleTitleChange = useCallback(
     (value) => setTextFieldValue1(value),
@@ -94,20 +95,29 @@ export default function PageChange() {
     (value) => setTextFieldValue(value),
     []
   );
-  // const submit = useSubmit();
 
-  // const handleSubmit = async () => {
-  //   await action({
-  //     request: {
-  //       formData: async () => ({
-  //         id: pageEdit.id,
-  //         title: textTitleValue,
-  //         description: textDescriptionValue,
-  //       }),
-  //     },
-  //   });
-  //   navigate(`/app/pagess/${pageEdit.id}`);
-  // };
+  const handleSuggest = async () => {
+    if (textDescriptionValue) {
+      const openai = new OpenAI({
+        apiKey: "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",
+        dangerouslyAllowBrowser: true,
+      });
+
+      try {
+        const completion = await openai.completions.create({
+          model: "text-davinci-003",
+          prompt: textDescriptionValue,
+          max_tokens: 100,
+          temperature: 0.7,
+        });
+
+        setTextFieldValue2(completion.choices[0].text);
+      } catch (error) {
+        console.error("Error suggesting content:", error);
+      }
+    }
+  };
+
   const submit = useSubmit();
 
   function handleSave() {
@@ -116,17 +126,12 @@ export default function PageChange() {
       title: textTitleValue,
       description: textDescriptionValue,
     };
-    console.log("Luu duong", data);
     setCleanFormState({ ...formState });
     submit(data, { method: "post" });
-    // navigate(`/app/pages`);
   }
   return (
     <Page
-      backAction={{
-        content: "Back to Pages",
-        onAction: () => navigate("/app/pages"),
-      }}
+      backAction={{ content: "Products", url: "#" }}
       title={`Edit Page: ${pageEdit.title}`}
       compactTitle
       pagination={{
@@ -152,15 +157,27 @@ export default function PageChange() {
                 autoComplete="off"
                 multiline={6}
               />
+              <TextField
+                label="Suggest Content"
+                value={textSuggestContent}
+                onChange={(value) => setTextFieldValue2(value)}
+                autoComplete="off"
+                multiline
+              />
             </FormLayout>
           </LegacyCard>
         </Layout.Section>
       </Layout>
       <PageActions
+        secondaryActions={[
+          {
+            content: "Suggest",
+            onAction: handleSuggest,
+          },
+        ]}
         primaryAction={{
           content: "Save",
           onAction: handleSave,
-          // url: `/app/pagess/${pageEdit.id}`,
         }}
       />
     </Page>

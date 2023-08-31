@@ -31,7 +31,7 @@ export async function loader({ request }) {
   const pageList = pagesResponse.data.pages.map((pages) => ({
     id: pages.id,
     title: pages.title,
-    description: pages.body_html,
+    description: pages.body_html || "",
     // Image: product.image.src,
     date: pages.created_at,
   }));
@@ -73,19 +73,14 @@ export default function PageForm() {
 
   const rowMarkup = pageList.map(
     ({ id, date, title, description, Image }, index) => (
-      <IndexTable.Row
-        id={id}
-        key={id}
-        // selected={selectedResources.includes(id)}
-        position={index}
-      >
+      <IndexTable.Row id={id} key={id} position={index}>
         <IndexTable.Cell>
           <Text variant="bodyMd" fontWeight="bold" as="span">
             {id}
           </Text>
         </IndexTable.Cell>
-        <IndexTable.Cell>{title}</IndexTable.Cell>
-        <IndexTable.Cell>{description}</IndexTable.Cell>
+        <IndexTable.Cell>{truncate(title)}</IndexTable.Cell>
+        <IndexTable.Cell>{truncate(description)}</IndexTable.Cell>
         <IndexTable.Cell>{date}</IndexTable.Cell>
         <IndexTable.Cell>
           <Button primary onClick={() => navigate(`/app/pagess/${id}`)}>
@@ -103,13 +98,8 @@ export default function PageForm() {
         <IndexTable
           resourceName={resourceName}
           itemCount={pageList.length}
-          // selectedItemsCount={
-          //   allResourcesSelected ? "All" : selectedResources.length
-          // }
-          // onSelectionChange={handleSelectionChange}
           headings={[
             { title: "Id" },
-            // { title: "Image" },
             { title: "Title" },
             { title: "Description" },
             { title: "Date" },

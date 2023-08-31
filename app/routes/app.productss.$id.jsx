@@ -8,6 +8,7 @@ import {
   Layout,
   PageActions,
 } from "@shopify/polaris";
+import { MagicMajor } from "@shopify/polaris-icons";
 import React, { useState, useCallback } from "react";
 import axios, { post } from "axios";
 import {
@@ -18,7 +19,7 @@ import {
 } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import { authenticate } from "~/shopify.server";
-
+import OpenAI from "openai";
 export async function loader({ request, params }) {
   const { session } = await authenticate.admin(request);
   const config = {
@@ -69,27 +70,8 @@ export async function action({ request }) {
 
     return redirect(`/app/products`);
   }
-  return null;
 }
-// //Tạo API của Open API
 
-// import OpenAI from "openai";
-// const openai = new OpenAI({
-//   apiKey: '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' ,
-//   organization: "org-How50XcyMrGqOrdoVJUBbwGC"
-// });
-
-// const completion = await openai.completions.create({
-//   model: "text-davinci-003",
-//   prompt: "This story begins",
-//   max_tokens: 30,
-// });
-// console.log(completion.choices[0].text);
-
-//   console.log(completion);
-// }
-
-// //....
 export default function PageChange() {
   const { productEdit } = useLoaderData();
   const navigate = useNavigate();
@@ -103,6 +85,7 @@ export default function PageChange() {
   const [textDescriptionValue, setTextFieldValue] = useState(
     productEdit.description || ""
   );
+  const [textSuggestContent, setTextFieldValue2] = useState("");
 
   const handleTitleChange = useCallback(
     (value) => setTextFieldValue1(value),
@@ -113,8 +96,30 @@ export default function PageChange() {
     []
   );
 
-  const submit = useSubmit();
+  const handleSuggest = async () => {
+    if (textDescriptionValue) {
+      const openai = new OpenAI({
+        apiKey: "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",
+        // organization: "POVLMRK51304",
+        dangerouslyAllowBrowser: true,
+      });
 
+      try {
+        const completion = await openai.completions.create({
+          model: "text-davinci-003",
+          prompt: textDescriptionValue,
+          max_tokens: 100,
+          temperature: 0.7,
+        });
+
+        setTextFieldValue2(completion.choices[0].text);
+      } catch (error) {
+        console.error("Error suggesting content:", error);
+      }
+    }
+  };
+
+  const submit = useSubmit();
   function handleSave() {
     const data = {
       id: productEdit.id,
@@ -155,11 +160,24 @@ export default function PageChange() {
                 autoComplete="off"
                 multiline={6}
               />
+              <TextField
+                label="Suggest Content"
+                value={textSuggestContent}
+                onChange={(value) => setTextFieldValue2(value)}
+                autoComplete="off"
+                multiline
+              />
             </FormLayout>
           </LegacyCard>
         </Layout.Section>
       </Layout>
       <PageActions
+        secondaryActions={[
+          {
+            content: "Suggest",
+            onAction: handleSuggest,
+          },
+        ]}
         primaryAction={{
           content: "Save",
           onAction: handleSave,

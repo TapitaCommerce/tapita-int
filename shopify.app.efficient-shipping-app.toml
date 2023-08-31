@@ -2,7 +2,7 @@
 
 name = "efficient-shipping-app"
 client_id = "940532dbc9a941e979e03887754d6cf2"
-application_url = "https://listing-expedia-cet-leo.trycloudflare.com"
+application_url = "https://saturday-farmer-provision-tapes.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products,read_files,write_files,read_content,write_content"
 
 [auth]
 redirect_urls = [
-  "https://listing-expedia-cet-leo.trycloudflare.com/auth/callback",
-  "https://listing-expedia-cet-leo.trycloudflare.com/auth/shopify/callback",
-  "https://listing-expedia-cet-leo.trycloudflare.com/api/auth/callback"
+  "https://saturday-farmer-provision-tapes.trycloudflare.com/auth/callback",
+  "https://saturday-farmer-provision-tapes.trycloudflare.com/auth/shopify/callback",
+  "https://saturday-farmer-provision-tapes.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
