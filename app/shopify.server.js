@@ -10,6 +10,8 @@ import { restResources } from "@shopify/shopify-api/rest/admin/2023-07";
 import mongoose from "mongoose";
 import prisma from "./db.server";
 import GraphQLServer from "./graphql/graphql.server";
+// import AdminModel from "~/models/admin.model";
+// import bcrypt from "bcryptjs";
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -51,7 +53,7 @@ mongoose.connect(dbConnectionString).then(result => {
 //   const username = "admin";
 //   const password = await bcrypt.hash("admin", 10);
 //   const email = "sonnguyenhong291@gmail.com";
-//   await adminModel.create({ username, password, email });
+//   await AdminModel.create({ username, password, email });
 // }, 500)
 
 export default shopify;
