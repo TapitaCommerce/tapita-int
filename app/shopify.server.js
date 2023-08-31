@@ -36,14 +36,17 @@ const shopify = shopifyApp({
     : {}),
 });
 
-const dbConnectionString = 'mongodb://localhost:27017/tapita_training';
-mongoose.set('debug', true);
-mongoose.set('debug', { color: true });
-mongoose.connect(dbConnectionString).then(result => {
-  console.log('Connect to mongodb successfully');
-}).catch(err => {
-  console.log('Error occured when connect to mongodb: ', err.message);
-})
+const dbConnectionString = "mongodb://127.0.0.1:27017/tapita_training";
+mongoose.set("debug", true);
+mongoose.set("debug", { color: true });
+mongoose
+  .connect(dbConnectionString)
+  .then((result) => {
+    console.log("Connect to mongodb successfully");
+  })
+  .catch((err) => {
+    console.log("Error occured when connect to mongodb: ", err.message);
+  });
 
 export default shopify;
 export const apiVersion = LATEST_API_VERSION;
