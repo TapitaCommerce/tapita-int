@@ -18,7 +18,8 @@ export default function GraphQLServer() {
         schema: schemaWithMiddlewares,
         context: async () => {
             const adminAuthorizationHeader = req.headers[ADMIN_ACCESS_TOKEN] || '';
-            const merchantAuthorizationHeader = req.headers[MERCHANT_ACCESS_TOKEN] || null;
+            let merchantAuthorizationHeader = req.headers[MERCHANT_ACCESS_TOKEN] || null;
+            merchantAuthorizationHeader = merchantAuthorizationHeader || req.body.variables.input.merchantAccessToken
             // const token = authorizationHeader.split(' ')[1];
             const user = await getUserFromToken(adminAuthorizationHeader);
             

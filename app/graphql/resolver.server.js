@@ -102,9 +102,8 @@ export const resolver = {
         const deletedAdmin = await AdminModel.findByIdAndDelete(new mongoose.Types.ObjectId(input.id));
         return deletedAdmin;
     },
-    getProductsByStore: async ({ input }, ctx) => {
-        const context = await ctx();
-        const merchantAccessToken = context.merchantAccessToken;
+    getProductsByStore: async ({ input }, request) => {
+        const merchantAccessToken = input.merchantAccessToken;
         if(merchantAccessToken) {
             const store = await StoreModel.findOne({
                 accessToken: merchantAccessToken,
@@ -119,6 +118,7 @@ export const resolver = {
                     [SHOPIFY_ACCESS_TOKEN]: store.accessToken,
                 }
             });
+            
             return response.data.products;
         } else {
             throw new Error('Fail to authenticate to merchant store');

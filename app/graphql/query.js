@@ -69,8 +69,8 @@ export const GET_ADMIN = gql`
 `;
 
 export const GET_PRODUCTS_BY_STORE = gql`
-  query GetProductsByStore {
-    getProductsByStore {
+  query GetProductsByStore($input: GetProductsByStoreInput) {
+    getProductsByStore(input: $input) {
       id
       title
       body_html

@@ -26,7 +26,7 @@ export default function AdminStoreDetail() {
     let StoreInformation;
 
     if(data?.getStore) {
-        localStorage.setItem(LS_MERCHANT_AT, data?.getStore.accessToken);
+        window?.localStorageTp.setItem(LS_MERCHANT_AT, data?.getStore.accessToken);
         StoreInformation = (
             <>
                 <TextField

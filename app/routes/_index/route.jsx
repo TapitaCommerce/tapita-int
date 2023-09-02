@@ -47,7 +47,7 @@ export default function App() {
       } });
       setIsLoading(false);
       if(response.data.login) {
-        localStorage.setItem(LS_ADMIN_AT, response.data.login);
+        window?.localStorageTp.setItem(LS_ADMIN_AT, response.data.login);
         navigate('/admin');
       } else {
         throw new Error('Some error occured');

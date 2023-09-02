@@ -10,8 +10,8 @@ export default function Admin() {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem(LS_ADMIN_AT);
-        localStorage.removeItem(LS_MERCHANT_AT);
+        window?.localStorageTp.removeItem(LS_ADMIN_AT);
+        window?.localStorageTp.removeItem(LS_MERCHANT_AT);
         navigate('/');
     }
 

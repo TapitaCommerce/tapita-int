@@ -1,21 +1,35 @@
 import { Button, IndexTable, LegacyCard, Page, Spinner, Text } from "@shopify/polaris";
 import indexStyles from "./_index/style.css";
-import { useNavigate } from "@remix-run/react";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 import { useQuery } from "@apollo/client";
 import { GET_PRODUCTS_BY_STORE } from "~/graphql/query";
 import { truncate } from "~/utils";
+import StoreModel from "~/models/store.model";
+import { json } from "@remix-run/node";
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
+
+export async function loader({request, params}) {
+    const id = params.id;
+    const store = await StoreModel.findOne({ id: id });
+    return json({ store });
+}
 
 export default function StoreProducts() {
     const navigate = useNavigate();
+    const { store } = useLoaderData();
 
     const resourceName = {
         singular: 'product',
         plural: 'products',
     };
 
-    const { loading, error, data } = useQuery(GET_PRODUCTS_BY_STORE);
-    console.log(data);
+    const { loading, error, data } = useQuery(GET_PRODUCTS_BY_STORE, {
+        variables: {
+            input: {
+                merchantAccessToken: store.accessToken
+            }
+        }
+    });
 
     let rowMarkup;
 
