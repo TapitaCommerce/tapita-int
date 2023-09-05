@@ -2,7 +2,7 @@
 
 name = "efficient-shipping-app"
 client_id = "85d86f66770af853530e243b9d0cbf80"
-application_url = "https://ratio-bible-one-significantly.trycloudflare.com"
+application_url = "https://serial-lab-univ-rfc.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products,read_files,write_files"
 
 [auth]
 redirect_urls = [
-  "https://ratio-bible-one-significantly.trycloudflare.com/auth/callback",
-  "https://ratio-bible-one-significantly.trycloudflare.com/auth/shopify/callback",
-  "https://ratio-bible-one-significantly.trycloudflare.com/api/auth/callback"
+  "https://serial-lab-univ-rfc.trycloudflare.com/auth/callback",
+  "https://serial-lab-univ-rfc.trycloudflare.com/auth/shopify/callback",
+  "https://serial-lab-univ-rfc.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

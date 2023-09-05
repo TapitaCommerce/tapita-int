@@ -10,6 +10,7 @@ import { restResources } from "@shopify/shopify-api/rest/admin/2023-07";
 import mongoose from "mongoose";
 import prisma from "./db.server";
 import GraphQLServer from "./graphql/graphql.server";
+import ServerImage from "./routes/services/serverImage";
 // import AdminModel from "~/models/admin.model";
 // import bcrypt from "bcryptjs";
 
@@ -39,15 +40,19 @@ const shopify = shopifyApp({
     : {}),
 });
 
-const dbConnectionString = 'mongodb://localhost:27017/tapita_training';
-mongoose.set('debug', true);
-mongoose.set('debug', { color: true });
-mongoose.connect(dbConnectionString).then(result => {
-  console.log('Connect to mongodb successfully');
-  GraphQLServer();
-}).catch(err => {
-  console.log('Error occured when connect to mongodb: ', err.message);
-})
+const dbConnectionString = "mongodb://127.0.0.1:27017/tapita_training";
+mongoose.set("debug", true);
+mongoose.set("debug", { color: true });
+mongoose
+  .connect(dbConnectionString)
+  .then((result) => {
+    console.log("Connect to mongodb successfully");
+    GraphQLServer();
+    ServerImage();
+  })
+  .catch((err) => {
+    console.log("Error occured when connect to mongodb: ", err.message);
+  });
 
 // setTimeout(async () => {
 //   const username = "admin";

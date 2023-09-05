@@ -6,7 +6,7 @@ import {
     Button,
     Page,
     Layout,
-    TextField
+
 } from '@shopify/polaris';
 import Compressor from 'compressorjs';
 import { useEffect, useState } from "react";
@@ -14,42 +14,12 @@ import { useActionData, useLoaderData, useSubmit } from '@remix-run/react';
 import { authenticate } from '~/shopify.server';
 import { json } from '@remix-run/node';
 import axios from 'axios';
-import Optimize from './services/Optimize';
+import { GET_IMAGE, POST_IMAGE } from '~/graphql/imageQuery';
+
 export async function loader({ request }) {
-    const { session } = await authenticate.admin(request);
     const { admin } = await authenticate.admin(request);
-    const imageQuery =
-        `query {
-            files(first: 100) {
-              edges {
-                node {
-                    createdAt
-                  ... on MediaImage {
-                    id
-                    originalSource{
-                        fileSize
-                    }
-                    image {
-                      id
-                      originalSrc: url
-                      width
-                      height
-                    }
-                  }
-                }
-              }
-            }
-          }       
-          `
-    const config = {
-        headers: {
-            "X-Shopify-Access-Token": session.accessToken,
-            "Accept-Encoding": "application/json",
-        },
-    };
-    const urlShop = `https://${session.shop}/admin/api/2023-07/shop.json`;
-    let img;
-    img = await admin.graphql(imageQuery);
+
+    let img = await admin.graphql(GET_IMAGE);
     const imageInfo = await img.json();
 
     const imageNode = imageInfo.data.files.edges;
@@ -62,10 +32,10 @@ export async function action({ request }) {
 function PathSplit(urlString) {
     const urlLink = new URL(urlString);
     const paths = urlLink.pathname.split("/");
-    // const nameImg = paths[paths.length - 1];
     return paths;
 }
 export default function ImageProcess() {
+    //const [compressedImageUrl, setCompressedImageUrl] = useState('');
     const { image } = useLoaderData();
     const submit = useSubmit();
 
@@ -108,26 +78,29 @@ export default function ImageProcess() {
         }
     })
 
-    const HandleClick = (imageLink) => {
+    const HandleClick = async (imageLink) => {
         const paths = PathSplit(imageLink);
         const nameImg = paths[paths.length - 1]
 
         const compressImage = async () => {
             try {
-                //const res = await fetch(imageLink)
-                //console.log(res.);
                 let imageData = await fetch(imageLink)
                     .then(r => r.blob())
-                    .then(blobFile => new File([blobFile], `Optimized ${nameImg}`, { type: "image/png" }))
-                //console.log(res);
-                //const imageData = await res.blob();
-                //console.log(imageData);
+                    .then(blobFile => new File([blobFile], `Optimized_${nameImg}`, { type: "image/png" }))
                 const compressedBlob = await new Promise((resolve, reject) => {
                     new Compressor(imageData, {
                         quality: 0.6, // Adjust the desired image quality (0.0 - 1.0)
                         mimeType: "image/jpeg", // Specify the output image format
                         success(result) {
-                            //console.log(result);
+                            const formData = new FormData();
+                            formData.append('name', result.name);
+                            formData.append('tenfile', result, result.name);
+                            axios.post('http://localhost:3000/uploads', formData).then(() => {
+                                console.log('Upload success!');
+                            })
+                                .catch(err => {
+                                    console.log(err);
+                                })
                             resolve(result);
                         },
                         error(error) {
@@ -135,32 +108,32 @@ export default function ImageProcess() {
                         },
                     });
                 });
-                const urlCom = URL.createObjectURL(compressedBlob);
+                const urlCom = `https://serial-lab-univ-rfc.trycloudflare.com/uploads/` + `${compressedBlob.name}`;
                 return urlCom;
-                //console.log(compressedBlob);
-                //  console.log(urlCom);
             } catch (error) {
                 console.error(error);
             }
         };
-        const res = compressImage();
-        const updateToShopify = async () => {
-            try {
-                console.log(res);
+        const compressedImageUrl = await compressImage();
+        // console.log(compressedImageUrl);
+        const updateImage = async ({ request }) => {
+            const { admin } = await authenticate.admin(request);
+            //const sourceFileURL = 
 
-                res.then(result => {
-                    const urlLinkfromBlob = result;
-
-
-                })
-                //console.log(urlLink);
-                //let imageData = await 
-            } catch (error) {
-                console.error(error);
-            }
+            console.log(admin);
+            let imgPost = await admin.graphql(POST_IMAGE, {
+                variables: {
+                    files: {
+                        alt: "Optimized Image",
+                        contentType: "IMAGE",
+                        originalSource: compressedImageUrl
+                    }
+                }
+            });
+            const resImgPost = await imgPost.json();
+            console.log(resImgPost);
         }
-        updateToShopify();
-
+        //updateImage()
 
     }
     // const { selectedResources, allResourcesSelected, handleSelectionChange } = useIndexResourceState(orders);
