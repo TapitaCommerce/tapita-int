@@ -54,13 +54,6 @@ mongoose
     console.log("Error occured when connect to mongodb: ", err.message);
   });
 
-// setTimeout(async () => {
-//   const username = "admin";
-//   const password = await bcrypt.hash("admin", 10);
-//   const email = "sonnguyenhong291@gmail.com";
-//   await AdminModel.create({ username, password, email });
-// }, 500)
-
 export default shopify;
 export const apiVersion = LATEST_API_VERSION;
 export const addDocumentResponseHeaders = shopify.addDocumentResponseHeaders;
