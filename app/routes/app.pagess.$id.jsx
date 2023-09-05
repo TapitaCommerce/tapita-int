@@ -7,7 +7,10 @@ import {
   Icon,
   Layout,
   PageActions,
+  Button,
 } from "@shopify/polaris";
+import { MagicMinor } from "@shopify/polaris-icons";
+import { TickSmallMinor } from "@shopify/polaris-icons";
 import React, { useState, useCallback } from "react";
 import axios, { post } from "axios";
 import {
@@ -107,7 +110,7 @@ export default function PageChange() {
         const completion = await openai.completions.create({
           model: "text-davinci-003",
           prompt: textDescriptionValue,
-          max_tokens: 100,
+          max_tokens: 500,
           temperature: 0.7,
         });
 
@@ -117,9 +120,12 @@ export default function PageChange() {
       }
     }
   };
+  const handleMergeClick = () => {
+    setTextFieldValue(textSuggestContent);
+    setTextFieldValue2("");
+  };
 
   const submit = useSubmit();
-
   function handleSave() {
     const data = {
       id: pageEdit.id,
@@ -164,6 +170,16 @@ export default function PageChange() {
                 autoComplete="off"
                 multiline
               />
+              <Button
+                size="micro"
+                primary
+                outline
+                monochrome
+                icon={TickSmallMinor}
+                onClick={handleMergeClick}
+              >
+                Merge
+              </Button>
             </FormLayout>
           </LegacyCard>
         </Layout.Section>

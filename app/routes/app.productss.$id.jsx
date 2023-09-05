@@ -7,9 +7,10 @@ import {
   Icon,
   Layout,
   PageActions,
+  Button,
 } from "@shopify/polaris";
-import { MagicMajor } from "@shopify/polaris-icons";
 import React, { useState, useCallback } from "react";
+import { TickSmallMinor } from "@shopify/polaris-icons";
 import axios, { post } from "axios";
 import {
   useActionData,
@@ -118,7 +119,10 @@ export default function PageChange() {
       }
     }
   };
-
+  const handleMergeClick = () => {
+    setTextFieldValue(textSuggestContent);
+    setTextFieldValue2("");
+  };
   const submit = useSubmit();
   function handleSave() {
     const data = {
@@ -167,6 +171,16 @@ export default function PageChange() {
                 autoComplete="off"
                 multiline
               />
+              <Button
+                size="micro"
+                primary
+                outline
+                monochrome
+                icon={TickSmallMinor}
+                onClick={handleMergeClick}
+              >
+                Merge
+              </Button>
             </FormLayout>
           </LegacyCard>
         </Layout.Section>
