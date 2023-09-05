@@ -6,6 +6,7 @@ import { COOKIE_NAME } from "~/constants/string.constant";
 import AdminServer from "./admin.server";
 
 const SECRET_KEY = process.env.SECRET_KEY;
+console.log(SECRET_KEY)
 
 if(!SECRET_KEY) {
     throw new Error("SESSION_SECRET is not set");

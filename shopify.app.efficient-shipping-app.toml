@@ -1,8 +1,8 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 name = "efficient-shipping-app"
-client_id = "65ed361e1b30cad533121d30ca794626"
-application_url = "https://dv-russia-accessory-moderator.trycloudflare.com"
+client_id = "940532dbc9a941e979e03887754d6cf2"
+application_url = "https://effort-bald-productivity-man.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products,read_files,write_files,read_content,write_content"
 
 [auth]
 redirect_urls = [
-  "https://dv-russia-accessory-moderator.trycloudflare.com/auth/callback",
-  "https://dv-russia-accessory-moderator.trycloudflare.com/auth/shopify/callback",
-  "https://dv-russia-accessory-moderator.trycloudflare.com/api/auth/callback"
+  "https://effort-bald-productivity-man.trycloudflare.com/auth/callback",
+  "https://effort-bald-productivity-man.trycloudflare.com/auth/shopify/callback",
+  "https://effort-bald-productivity-man.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
@@ -24,4 +24,4 @@ embedded = false
 
 [build]
 automatically_update_urls_on_dev = true
-dev_store_url = "hongsonstore.myshopify.com"
+dev_store_url = "testaccesstoken.myshopify.com"

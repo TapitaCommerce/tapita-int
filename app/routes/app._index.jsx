@@ -33,20 +33,21 @@ export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
   let shop;
   const config = {
-      headers: {
-          "X-Shopify-Access-Token": session.accessToken,
-          "Accept-Encoding": "application/json",
-      },
+    headers: {
+      "X-Shopify-Access-Token": session.accessToken,
+      "Accept-Encoding": "application/json",
+    },
   };
   shop = await axios.get(
     `https://${session.shop}/admin/api/2023-07/shop.json`,
     config
   );
   shop = shop.data.shop;
+  console.log(shop);
   const shopData = await StoreModel.findOneAndUpdate(
     {
-      id: shop.id
-    }, 
+      id: shop.id,
+    },
     {
       id: shop.id,
       name: shop.name,
@@ -67,11 +68,12 @@ export const loader = async ({ request }) => {
       phone: shop.phone || "NULL",
       created_at: shop.created_at,
       accessToken: session.accessToken,
-    }, 
+    },
     {
       upsert: true,
-    });
-  
+    }
+  );
+  console.log("NGUYEN HONG SON data: ", shopData);
   return json({ shop: shopData });
 };
 
@@ -141,7 +143,7 @@ export default function Index() {
   }, [productId]);
 
   const generateProduct = () => submit({}, { replace: true, method: "POST" });
-  
+
   return (
     <Page>
       <ui-title-bar title="Store information">
@@ -150,139 +152,139 @@ export default function Index() {
         </button>
       </ui-title-bar>
       <VerticalStack gap="5">
-      <Card>
-        <Form onSubmit={() => submit({}, { replace: true, method: "GET" })}> 
-          <FormLayout>
-            <TextField
-              label="Shop id"
-              value={shop.id}
-              type="password"
-              autoComplete="text"
-            />
+        <Card>
+          <Form onSubmit={() => submit({}, { replace: true, method: "GET" })}>
+            <FormLayout>
+              <TextField
+                label="Shop id"
+                value={shop.id}
+                type="password"
+                autoComplete="text"
+              />
 
-            <TextField
-              label="Shop name"
-              value={shop.name}
-              type="text"
-              autoComplete="text"
-            />
+              <TextField
+                label="Shop name"
+                value={shop.name}
+                type="text"
+                autoComplete="text"
+              />
 
-            <TextField
-              label="Shop email"
-              value={shop.email}
-              type="email"
-              autoComplete="email"
-            />
+              <TextField
+                label="Shop email"
+                value={shop.email}
+                type="email"
+                autoComplete="email"
+              />
 
-            <TextField
-              label="Shop domain"
-              value={shop.domain}
-              type="text"
-              autoComplete="text"
-            />
+              <TextField
+                label="Shop domain"
+                value={shop.domain}
+                type="text"
+                autoComplete="text"
+              />
 
-            <TextField
-              label="Shop scope"
-              value={shop.domain}
-              type="text"
-              autoComplete="text"
-            />
+              <TextField
+                label="Shop scope"
+                value={shop.domain}
+                type="text"
+                autoComplete="text"
+              />
 
-            <TextField
-              label="Shop country"
-              value={shop.domain}
-              type="text"
-              autoComplete="text"
-            />
+              <TextField
+                label="Shop country"
+                value={shop.domain}
+                type="text"
+                autoComplete="text"
+              />
 
-            <TextField
-              label="Shop customer email"
-              value={shop.domain}
-              type="text"
-              autoComplete="text"
-            />
+              <TextField
+                label="Shop customer email"
+                value={shop.domain}
+                type="text"
+                autoComplete="text"
+              />
 
-            <TextField
-              label="Shop my shopify domain"
-              value={shop.myshopify_domain}
-              type="text"
-              autoComplete="text"
-            />
+              <TextField
+                label="Shop my shopify domain"
+                value={shop.myshopify_domain}
+                type="text"
+                autoComplete="text"
+              />
 
-            <TextField
-              label="Shop plan name"
-              value={shop.plan_name}
-              type="text"
-              autoComplete="text"
-            />
+              <TextField
+                label="Shop plan name"
+                value={shop.plan_name}
+                type="text"
+                autoComplete="text"
+              />
 
-            <TextField
-              label="Shop plan display name"
-              value={shop.plan_display_name}
-              type="text"
-              autoComplete="text"
-            />
+              <TextField
+                label="Shop plan display name"
+                value={shop.plan_display_name}
+                type="text"
+                autoComplete="text"
+              />
 
-            <TextField
-              label="Shop shop owner"
-              value={shop.shop_owner}
-              type="text"
-              autoComplete="text"
-            />
+              <TextField
+                label="Shop shop owner"
+                value={shop.shop_owner}
+                type="text"
+                autoComplete="text"
+              />
 
-            <TextField
-              label="Shop iana timezone"
-              value={shop.iana_timezone}
-              type="text"
-              autoComplete="text"
-            />
+              <TextField
+                label="Shop iana timezone"
+                value={shop.iana_timezone}
+                type="text"
+                autoComplete="text"
+              />
 
-            <TextField
-              label="Shop currency"
-              value={shop.currency}
-              type="text"
-              autoComplete="text"
-            />
+              <TextField
+                label="Shop currency"
+                value={shop.currency}
+                type="text"
+                autoComplete="text"
+              />
 
-            <TextField
-              label="Shop address1"
-              value={shop.address1}
-              type="text"
-              autoComplete="text"
-            />
+              <TextField
+                label="Shop address1"
+                value={shop.address1}
+                type="text"
+                autoComplete="text"
+              />
 
-            <TextField
-              label="Shop address2"
-              value={shop.address2}
-              type="text"
-              autoComplete="text"
-            />
+              <TextField
+                label="Shop address2"
+                value={shop.address2}
+                type="text"
+                autoComplete="text"
+              />
 
-            <TextField
-              label="Shop phone"
-              value={shop.phone}
-              type="text"
-              autoComplete="text"
-            />
+              <TextField
+                label="Shop phone"
+                value={shop.phone}
+                type="text"
+                autoComplete="text"
+              />
 
-            <TextField
-              label="Shop created at"
-              value={shop.created_at}
-              type="text"
-              autoComplete="text"
-            />
+              <TextField
+                label="Shop created at"
+                value={shop.created_at}
+                type="text"
+                autoComplete="text"
+              />
 
-            <TextField
-              label="Shop access token"
-              value={shop.accessToken}
-              type="text"
-              autoComplete="text"
-            />
+              <TextField
+                label="Shop access token"
+                value={shop.accessToken}
+                type="text"
+                autoComplete="text"
+              />
 
-            <Button submit>Submit</Button>
-          </FormLayout>
-        </Form>
-      </Card>
+              <Button submit>Submit</Button>
+            </FormLayout>
+          </Form>
+        </Card>
       </VerticalStack>
     </Page>
   );
