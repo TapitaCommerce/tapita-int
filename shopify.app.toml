@@ -2,7 +2,7 @@
 
 name = "efficient-shipping-app"
 client_id = "65ed361e1b30cad533121d30ca794626"
-application_url = "https://heroes-plate-icq-arabic.trycloudflare.com"
+application_url = "https://cottage-protest-diff-conventional.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products,read_files,write_files"
 
 [auth]
 redirect_urls = [
-  "https://heroes-plate-icq-arabic.trycloudflare.com/auth/callback",
-  "https://heroes-plate-icq-arabic.trycloudflare.com/auth/shopify/callback",
-  "https://heroes-plate-icq-arabic.trycloudflare.com/api/auth/callback"
+  "https://cottage-protest-diff-conventional.trycloudflare.com/auth/callback",
+  "https://cottage-protest-diff-conventional.trycloudflare.com/auth/shopify/callback",
+  "https://cottage-protest-diff-conventional.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
