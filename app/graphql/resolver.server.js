@@ -5,15 +5,20 @@ import StoreModel from "~/models/store.model";
 import mongoose from "mongoose";
 import axios from "axios";
 import { SHOPIFY_ACCESS_TOKEN } from "~/constants/header.constant";
+import {
+    shopifyQuery,
+    shopifyMutation
+} from './shopifyAPI.server';
+import { optimize } from './optimize.server';
 
 export const verifyToken = async (bearerToken) => {
-    if(!bearerToken) {
+    if (!bearerToken) {
         throw new Error('You have to provide bearer token on the request headers');
     } else {
         const token = bearerToken.split(' ')[1];
         const decoded = await jwt.verify(token, process.env.SECRET_KEY);
         console.log('DECODED: ', decoded);
-        if(!decoded) {
+        if (!decoded) {
             throw new Error('Invalid access token');
         }
         return true;
@@ -21,12 +26,12 @@ export const verifyToken = async (bearerToken) => {
 }
 
 export const getUserFromToken = async (token) => {
-    if(!token || token == '') {
+    if (!token || token == '') {
         return null;
     }
     const decoded = await jwt.verify(token, process.env.SECRET_KEY);
     console.log('DECODED: ', decoded);
-    if(!decoded) {
+    if (!decoded) {
         return null;
     }
     return decoded;
@@ -54,26 +59,26 @@ export const resolver = {
     },
     login: async ({ input }, request) => {
         const { username, password } = input;
-    
+
         const existedAdmin = await AdminModel.findOne({ username: username });
-        if(!existedAdmin) {
+        if (!existedAdmin) {
             throw new Error('Username is not existed');
         }
-    
+
         const isValidPassword = await bcrypt.compare(password, existedAdmin.password);
-    
-        if(!isValidPassword) {
+
+        if (!isValidPassword) {
             throw new Error('Wrong password');
         }
-    
+
         const payload = {
             userId: existedAdmin._id,
         }
-    
+
         const accessToken = await jwt.sign(payload, process.env.SECRET_KEY, {
             expiresIn: '24h',
         })
-    
+
         return accessToken;
     },
     updateAdmin: async ({ input }, request) => {
@@ -85,12 +90,12 @@ export const resolver = {
     },
     createAdmin: async ({ input }, request) => {
         const { username, password, confirmedPassword, email } = input;
-        if(password !== confirmedPassword) {
+        if (password !== confirmedPassword) {
             throw new Error('Password and confirmed password must be matched');
         }
 
         const existed = await AdminModel.findOne({ username: username });
-        if(existed) {
+        if (existed) {
             throw new Error('Username has already been registed');
         }
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -102,27 +107,30 @@ export const resolver = {
         const deletedAdmin = await AdminModel.findByIdAndDelete(new mongoose.Types.ObjectId(input.id));
         return deletedAdmin;
     },
+    shopifyQuery,
+    shopifyMutation,
+    optimize,
     getProductsByStore: async ({ input }, request) => {
         const merchantAccessToken = input.merchantAccessToken;
-        if(merchantAccessToken) {
+        if (merchantAccessToken) {
             const store = await StoreModel.findOne({
                 accessToken: merchantAccessToken,
             });
 
-            if(!store) {
-                throw new Error('Fail to authenticate to merchant store. Store not found'); 
+            if (!store) {
+                throw new Error('Fail to authenticate to merchant store. Store not found');
             }
 
-            const response = await axios.get(`https://${store.domain}/admin/api/2023-07/products.json`, { 
+            const response = await axios.get(`https://${store.domain}/admin/api/2023-07/products.json`, {
                 headers: {
                     [SHOPIFY_ACCESS_TOKEN]: store.accessToken,
                 }
             });
-            
+
             return response.data.products;
         } else {
             throw new Error('Fail to authenticate to merchant store');
         }
-        
+
     }
 }

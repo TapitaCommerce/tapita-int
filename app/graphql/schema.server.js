@@ -76,6 +76,7 @@ export const schema = buildSchema(`
         getAllAdmins: [Admin]
         getAdmin(input: GetAdminInput): Admin
         getProductsByStore(input: GetProductsByStoreInput): [Product]
+        shopifyQuery(input: String, merchantAccessToken: String): String
     }
       
     type Mutation {
@@ -83,5 +84,7 @@ export const schema = buildSchema(`
         createAdmin(input: CreateAdminInput): Admin
         updateAdmin(input: UpdateAdminInput): Admin
         deleteAdmin(input: DeleteAdminInput): Admin
+        shopifyMutation(input: String, merchantAccessToken: String): String
+        optimize(id: String, toRestore: Boolean, merchantAccessToken: String): String
     }
 `)

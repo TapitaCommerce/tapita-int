@@ -78,3 +78,14 @@ export const GET_PRODUCTS_BY_STORE = gql`
     }
   }
 `
+
+export const SHOPIFY_QUERY = gql`
+    query shopifyQuery($input: String, $merchantAccessToken: String) {
+        shopifyQuery(input: $input, merchantAccessToken: $merchantAccessToken)
+    }
+`
+export const OPTIMIZE_MUTATION = gql`
+    mutation optimize($id: String, $toRestore: Boolean, $merchantAccessToken: String) {
+        optimize(id: $id, toRestore: $toRestore,  merchantAccessToken: $merchantAccessToken)
+    }
+`

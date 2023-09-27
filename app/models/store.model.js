@@ -75,7 +75,10 @@ const storeSchema = new Schema({
     },
     accessToken: {
         type: String,
-    }
+    },
+    optimized_files: {
+        type: [String],
+    },
 });
 
 export default mongoose.model('Store', storeSchema);
