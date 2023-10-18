@@ -1,3 +1,6 @@
+import * as fs from "fs";
+import * as path from "path";
+import toml from "toml";
 import "@shopify/shopify-app-remix/adapters/node";
 import {
   AppDistribution,
@@ -12,13 +15,19 @@ import prisma from "./db.server";
 import GraphQLServer from "./graphql/graphql.server";
 // import AdminModel from "~/models/admin.model";
 // import bcrypt from "bcryptjs";
-
+console.log('APP INFORMATION: ');
+console.log(process.env.SHOPIFY_API_KEY);
+console.log(process.env.SHOPIFY_API_SECRET);
+console.log(process.env.SHOPIFY_APP_URL);
+const config = toml.parse(fs.readFileSync(path.join(__dirname, '..', 'shopify.app.toml'), 'utf-8'));
+console.log(config.application_url);
+console.log(config.access_scopes.scopes);
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
   apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
   apiVersion: LATEST_API_VERSION,
-  scopes: process.env.SCOPES?.split(","),
-  appUrl: process.env.SHOPIFY_APP_URL || "",
+  scopes: config.access_scopes.scopes?.split(","),
+  appUrl: process.env.SHOPIFY_APP_URL || config.application_url,
   authPathPrefix: "/auth",
   sessionStorage: new PrismaSessionStorage(prisma),
   distribution: AppDistribution.AppStore,
@@ -39,15 +48,15 @@ const shopify = shopifyApp({
     : {}),
 });
 
-const dbConnectionString = 'mongodb://localhost:27017/tapita_training';
-mongoose.set('debug', true);
-mongoose.set('debug', { color: true });
-mongoose.connect(dbConnectionString).then(result => {
-  console.log('Connect to mongodb successfully');
-  GraphQLServer();
-}).catch(err => {
-  console.log('Error occured when connect to mongodb: ', err.message);
-})
+// const dbConnectionString = 'mongodb://localhost:27017/tapita_training';
+// mongoose.set('debug', true);
+// mongoose.set('debug', { color: true });
+// mongoose.connect(dbConnectionString).then(result => {
+//   console.log('Connect to mongodb successfully');
+//   GraphQLServer();
+// }).catch(err => {
+//   console.log('Error occured when connect to mongodb: ', err.message);
+// })
 
 // setTimeout(async () => {
 //   const username = "admin";

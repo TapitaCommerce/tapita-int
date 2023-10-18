@@ -1,5 +1,5 @@
 const { buildSchema } = require("graphql")
-export const schema = buildSchema(`
+const schema = buildSchema(`
     input LoginInput {
         username: String
         password: String
@@ -73,3 +73,5 @@ export const schema = buildSchema(`
         deleteAdmin(input: DeleteAdminInput): Admin
     }
 `)
+
+module.exports = { schema };

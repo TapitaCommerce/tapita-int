@@ -1,10 +1,10 @@
-import AdminModel from "~/models/admin.model";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import StoreModel from "~/models/store.model";
-import mongoose from "mongoose";
+const AdminModel = require("../models/admin.model");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const StoreModel = require("../models/store.model");
+const mongoose = require("mongoose");
 
-export const verifyToken = async (bearerToken) => {
+const verifyToken = async (bearerToken) => {
     if(!bearerToken) {
         throw new Error('You have to provide bearer token on the request headers');
     } else {
@@ -18,7 +18,7 @@ export const verifyToken = async (bearerToken) => {
     }
 }
 
-export const resolver = {
+const resolver = {
     hello: () => {
         return "Hello World";
     },
@@ -131,3 +131,5 @@ export const resolver = {
         }
     }
 }
+
+module.exports = { resolver };
