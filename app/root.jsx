@@ -11,7 +11,7 @@ import {
 
 export default function App() {
   const httpLink = createHttpLink({
-    uri: 'http://localhost:4000/graphql',
+    uri: 'https://his-india-horizontal-ya.trycloudflare.com/graphql',
   });
   
   

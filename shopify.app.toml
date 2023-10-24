@@ -2,7 +2,7 @@
 
 name = "efficient-shipping-app"
 client_id = "65ed361e1b30cad533121d30ca794626"
-application_url = "https://bytes-smoking-amenities-gsm.trycloudflare.com"
+application_url = "https://vacations-cf-gore-rendering.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products,read_files,write_files"
 
 [auth]
 redirect_urls = [
-  "https://bytes-smoking-amenities-gsm.trycloudflare.com/auth/callback",
-  "https://bytes-smoking-amenities-gsm.trycloudflare.com/auth/shopify/callback",
-  "https://bytes-smoking-amenities-gsm.trycloudflare.com/api/auth/callback"
+  "https://vacations-cf-gore-rendering.trycloudflare.com/auth/callback",
+  "https://vacations-cf-gore-rendering.trycloudflare.com/auth/shopify/callback",
+  "https://vacations-cf-gore-rendering.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

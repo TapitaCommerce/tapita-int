@@ -9,6 +9,16 @@ export const LOGIN_MUTATION = gql`
     }
 `;
 
+export const INSTALLED_APP = gql`
+    mutation InstalledApp {
+        installedApp {
+            id 
+            name 
+            shop
+        }
+    }
+`;
+
 export const DELETE_ADMIN = gql`
     mutation DeleteAdmin($input: DeleteAdminInput) {
         deleteAdmin(input: $input) {

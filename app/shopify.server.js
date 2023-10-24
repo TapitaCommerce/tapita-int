@@ -10,18 +10,10 @@ import {
 } from "@shopify/shopify-app-remix";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-07";
-import mongoose from "mongoose";
 import prisma from "./db.server";
-import GraphQLServer from "./graphql/graphql.server";
 // import AdminModel from "~/models/admin.model";
 // import bcrypt from "bcryptjs";
-console.log('APP INFORMATION: ');
-console.log(process.env.SHOPIFY_API_KEY);
-console.log(process.env.SHOPIFY_API_SECRET);
-console.log(process.env.SHOPIFY_APP_URL);
 const config = toml.parse(fs.readFileSync(path.join(__dirname, '..', 'shopify.app.toml'), 'utf-8'));
-console.log(config.application_url);
-console.log(config.access_scopes.scopes);
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
   apiSecretKey: process.env.SHOPIFY_API_SECRET || "",

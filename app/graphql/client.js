@@ -6,7 +6,7 @@ import { ClientErrorResponse, SuccessResponse } from "./response";
 const client = new ApolloClient({
     cache: new InMemoryCache(),
     ssrMode: true,
-    uri: 'http://localhost:4000/graphql',
+    uri: 'https://vacations-cf-gore-rendering.trycloudflare.com/graphql',
 });
 
 /**
